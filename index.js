@@ -6,8 +6,10 @@ require("dotenv").config();
 const PORT = process.env.PORT || 8000;
 
 const handleConnectionToDB = require("./src/db/config.db");
+const adminRoutes = require("./src/routes/auth.routes");
 
 // Middlewares
+app.use(express.json());
 app.use(cors());
 
 //Database Connection
@@ -20,9 +22,7 @@ handleConnectionToDB(process.env.MONGO_URI)
   });
 
 //Routes
-app.get("/", (req, res) => {
-  return res.send("Hello");
-});
+app.use("/api/auth", adminRoutes);
 
 app.listen(PORT, () => {
   console.log(`App is running on ${PORT}`);
