@@ -1,7 +1,9 @@
 const jwt = require("jsonwebtoken");
 const Admin = require("../models/admin.models");
+const User = require("../models/users.models");
+require("dotenv").config();
 
-const admin = async (req, res, next) => {
+const auth = async (req, res, next) => {
   try {
     let token = "";
     if (
@@ -17,22 +19,23 @@ const admin = async (req, res, next) => {
         .json({ message: "You are not logged in. Please login to get access" });
     }
 
-    const data = jwt.verify(token, process.env.JWT_KEY);
+    const data = jwt.verify(token, process.env.JWT_SECRET);
     if (!data) {
       return res
         .status(400)
         .json({ message: "You are not logged in. Please login to get access" });
     }
-    if (data.role !== "admin") {
-      return res.status(400).json({ message: "Only admin will have access." });
+    if (data.role !== "user") {
+      return res.status(400).json({ message: "Only user will have access." });
     }
-    const currUser = await Admin.findById({ id: data.id });
-    if (!currUser) {
+    let user = await User.findById({ _id: data.id });
+    if (!user) {
       return res
         .status(400)
         .json({ message: "You are not logged in. Please login to get access" });
     }
-    req.user = currUser;
+
+    req.user = user;
     next();
   } catch (err) {
     res.status(400).json({ message: err });
@@ -40,5 +43,5 @@ const admin = async (req, res, next) => {
 };
 
 module.exports = {
-  admin,
+  auth,
 };

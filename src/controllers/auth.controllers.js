@@ -2,7 +2,6 @@ const bcrypt = require("bcryptjs");
 const salt = bcrypt.genSaltSync(10);
 const jwt = require("jsonwebtoken");
 const Admin = require("../models/admin.models");
-const { default: mongoose } = require("mongoose");
 const User = require("../models/users.models");
 
 require("dotenv").config();
@@ -59,8 +58,36 @@ const handleUserLogin = async (req, res) => {
       process.env.JWT_SECRET
     );
     return res.status(200).json({ token, isComplete });
-  } catch (err) {
-    console.error(err);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// Add User Details -->
+const handleUserDetails = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { name, email, gender, dob, addresses } = req.body;
+    const user = await User.findByIdAndUpdate(userId, {
+      name,
+      email,
+      gender,
+      dob,
+    });
+    const addressesString = JSON.stringify(addresses);
+    if (user.addresses.length > 0) {
+      await User.findByIdAndUpdate(userId, {
+        $set: { "addresses.0": addressesString },
+      });
+      return res.status(200).json({ message: "Updated Successfully" });
+    }
+    await User.findByIdAndUpdate(userId, {
+      $push: { addresses: addressesString },
+    });
+    return res.status(200).json({ message: "Updated Successfully" });
+  } catch (error) {
+    console.error(error);
     return res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -68,4 +95,5 @@ const handleUserLogin = async (req, res) => {
 module.exports = {
   handleLoginAdmin,
   handleUserLogin,
+  handleUserDetails,
 };

@@ -14,7 +14,6 @@ const userSchema = new mongoose.Schema(
     },
     gender: String,
     dob: Date,
-    code: String,
     addresses: [
       {
         pincode: Number,
