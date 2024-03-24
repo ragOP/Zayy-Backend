@@ -1,8 +1,20 @@
 const express = require("express");
-const { handleLoginAdmin } = require("../controllers/auth.controllers");
+const {
+  handleLoginAdmin,
+  handleUserLogin,
+  handleUserDetails,
+} = require("../controllers/auth.controllers");
+const { auth } = require("../middlewares/protectedRoutes.middlewares");
 
-const route = express.Router();
+const router = express.Router();
 
-route.post("/admin/login", handleLoginAdmin);
+// Admin Login Route -->
+router.route("/admin/login").post(handleLoginAdmin);
 
-module.exports = route;
+// User Login Route -->
+router.route("/login").post(handleUserLogin);
+router.route("/addDetails").post(auth, handleUserDetails);
+
+// Seller Login Route -->
+
+module.exports = router;
