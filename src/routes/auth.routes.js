@@ -1,8 +1,15 @@
 const express = require("express");
-const { handleLoginAdmin } = require("../controllers/auth.controllers");
+const {
+  handleLoginAdmin,
+  handleUserLogin,
+} = require("../controllers/auth.controllers");
 
-const route = express.Router();
+const router = express.Router();
 
-route.post("/admin/login", handleLoginAdmin);
+// Admin Login Route -->
+router.route("/admin/login").post(handleLoginAdmin);
 
-module.exports = route;
+// User Login Route -->
+router.route("/login").post(handleUserLogin);
+
+module.exports = router;
