@@ -3,6 +3,7 @@ const salt = bcrypt.genSaltSync(10);
 const jwt = require("jsonwebtoken");
 const Admin = require("../models/admin.models");
 const User = require("../models/users.models");
+const Seller = require("../models/seller.models");
 
 require("dotenv").config();
 
@@ -92,8 +93,36 @@ const handleUserDetails = async (req, res) => {
   }
 };
 
+// Seller Register -->
+const handleSellerRegister = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const exisitingUser = await Seller.findOne({ email });
+    if (exisitingUser) {
+      return res
+        .status(400)
+        .json({ message: "Seller already exists, Please Login." });
+    }
+    const hashedPassword = await bcrypt.hashSync(password, salt);
+    const user = await Seller.create({ email, password: hashedPassword });
+    const token = jwt.sign(
+      { id: user._id, role: "seller" },
+      process.env.JWT_SECRET
+    );
+    return res.status(200).json({
+      token,
+      isComplete: false,
+      email: email,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "err " + error });
+  }
+};
+
 module.exports = {
   handleLoginAdmin,
   handleUserLogin,
   handleUserDetails,
+  handleSellerRegister,
 };
