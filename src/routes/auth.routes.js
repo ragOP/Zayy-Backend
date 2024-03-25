@@ -1,4 +1,6 @@
 const express = require("express");
+const multer = require("multer");
+const { storage } = require("../services/multer.services");
 const {
   handleLoginAdmin,
   handleUserLogin,
@@ -9,6 +11,7 @@ const {
 const { auth } = require("../middlewares/protectedRoutes.middlewares");
 
 const router = express.Router();
+const upload = multer({ storage: storage });
 
 // Error handling middleware -->
 router.use((err, req, res, next) => {
@@ -27,6 +30,8 @@ router.route("/login").post(handleUserLogin);
 router.route("/addDetails").post(auth, handleUserDetails);
 
 // Seller Login Route -->
-router.route("/sellerRegister").post(handleSellerRegister);
+router
+  .route("/sellerRegister")
+  .post(upload.single("logo"), handleSellerRegister);
 router.route("/sellerlogin").post(handleSellerLogin);
 module.exports = router;

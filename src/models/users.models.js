@@ -7,22 +7,37 @@ const userSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
-    name: String,
+    name: {
+      type: String,
+    },
     email: {
       type: String,
       unique: true,
     },
-    gender: String,
+    gender: {
+      type: String,
+    },
     dob: Date,
-    addresses: [
+    address: [
       {
-        pincode: Number,
-        address: String,
-        localty: String,
-        city: String,
-        state: String,
-        type: String,
-        isdefault: Boolean,
+        pincode: {
+          type: Number,
+        },
+        address: {
+          type: String,
+        },
+        localty: {
+          type: String,
+        },
+        city: {
+          type: String,
+        },
+        state: {
+          type: String,
+        },
+        type: {
+          type: String,
+        },
       },
     ],
   },

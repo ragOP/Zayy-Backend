@@ -4,11 +4,12 @@ const jwt = require("jsonwebtoken");
 const Admin = require("../models/admin.models");
 const User = require("../models/users.models");
 const Seller = require("../models/seller.models");
+const cloudinary = require("../services/cloudniary.services");
 
 require("dotenv").config();
 
 // Hardcoded OTP As of Now
-const OTP = "123456789";
+const OTP = "123456";
 
 // Admin Login -->
 const handleLoginAdmin = async (req, res) => {
@@ -69,22 +70,15 @@ const handleUserLogin = async (req, res) => {
 const handleUserDetails = async (req, res) => {
   try {
     const userId = req.user.id;
-    const { name, email, gender, dob, addresses } = req.body;
-    const user = await User.findByIdAndUpdate(userId, {
+    const { name, email, gender, dob, address } = req.body;
+    await User.findByIdAndUpdate(userId, {
+      $push: { address },
+    });
+    await User.findByIdAndUpdate(userId, {
       name,
       email,
       gender,
       dob,
-    });
-    const addressesString = JSON.stringify(addresses);
-    if (user.addresses.length > 0) {
-      await User.findByIdAndUpdate(userId, {
-        $set: { "addresses.0": addressesString },
-      });
-      return res.status(200).json({ message: "Updated Successfully" });
-    }
-    await User.findByIdAndUpdate(userId, {
-      $push: { addresses: addressesString },
     });
     return res.status(200).json({ message: "Updated Successfully" });
   } catch (error) {
@@ -96,7 +90,15 @@ const handleUserDetails = async (req, res) => {
 // Seller Register -->
 const handleSellerRegister = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const {
+      email,
+      password,
+      name,
+      website,
+      address,
+      bankDetails,
+      business_type,
+    } = req.body;
     const exisitingSeller = await Seller.findOne({ email });
     if (exisitingSeller) {
       return res
@@ -104,14 +106,25 @@ const handleSellerRegister = async (req, res) => {
         .json({ message: "Seller already exists, Please Login." });
     }
     const hashedPassword = await bcrypt.hashSync(password, salt);
-    const seller = await Seller.create({ email, password: hashedPassword });
+    const logoUrlResponse = await cloudinary.uploader.upload(req.file.path);
+    const logoUrl = logoUrlResponse.secure_url;
+    const seller = await Seller.create({
+      email,
+      password: hashedPassword,
+      name,
+      website,
+      logo: logoUrl,
+      business_type,
+    });
+    await Seller.findByIdAndUpdate(seller._id, {
+      $push: { address, bankDetails },
+    });
     const token = jwt.sign(
       { id: seller._id, role: "seller" },
       process.env.JWT_SECRET
     );
     return res.status(200).json({
       token,
-      isComplete: false,
       email: email,
     });
   } catch (error) {
@@ -133,17 +146,12 @@ const handleSellerLogin = async (req, res) => {
     const verify = bcrypt.compareSync(password, seller.password);
     if (!verify)
       return res.status(401).json({ message: "Unauthorized Access!" });
-    let isComplete = false;
-    if (seller.have_business) {
-      isComplete = true;
-    }
     const token = jwt.sign(
       { id: seller._id, role: "seller" },
       process.env.JWT_SECRET
     );
     return res.status(200).json({
       token,
-      isComplete: false,
       email: email,
     });
   } catch (error) {
