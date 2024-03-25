@@ -5,6 +5,7 @@ const Admin = require("../models/admin.models");
 const User = require("../models/users.models");
 const Seller = require("../models/seller.models");
 const cloudinary = require("../utils/cloudniary.utils");
+const fs = require("fs");
 
 require("dotenv").config();
 
@@ -108,6 +109,7 @@ const handleSellerRegister = async (req, res) => {
     const hashedPassword = await bcrypt.hashSync(password, salt);
     const logoUrlResponse = await cloudinary.uploader.upload(req.file.path);
     const logoUrl = logoUrlResponse.secure_url;
+    fs.unlinkSync(req.file.path);
     const seller = await Seller.create({
       email,
       password: hashedPassword,
