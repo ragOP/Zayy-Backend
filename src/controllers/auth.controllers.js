@@ -70,9 +70,9 @@ const handleUserLogin = async (req, res) => {
 const handleUserDetails = async (req, res) => {
   try {
     const userId = req.user.id;
-    const { name, email, gender, dob, addresses } = req.body;
+    const { name, email, gender, dob, address } = req.body;
     await User.findByIdAndUpdate(userId, {
-      $push: { addresses },
+      $push: { address },
     });
     await User.findByIdAndUpdate(userId, {
       name,
