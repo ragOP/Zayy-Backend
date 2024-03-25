@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 const Admin = require("../models/admin.models");
 const User = require("../models/users.models");
 const Seller = require("../models/seller.models");
-const cloudinary = require("../services/cloudniary.services");
+const cloudinary = require("../utils/cloudniary.utils");
 
 require("dotenv").config();
 
