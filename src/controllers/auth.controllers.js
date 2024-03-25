@@ -8,7 +8,7 @@ const Seller = require("../models/seller.models");
 require("dotenv").config();
 
 // Hardcoded OTP As of Now
-const OTP = "123456789";
+const OTP = "123456";
 
 // Admin Login -->
 const handleLoginAdmin = async (req, res) => {
@@ -69,22 +69,15 @@ const handleUserLogin = async (req, res) => {
 const handleUserDetails = async (req, res) => {
   try {
     const userId = req.user.id;
-    const { name, email, gender, dob, addresses } = req.body;
-    const user = await User.findByIdAndUpdate(userId, {
+    const { name, email, gender, dob, address } = req.body;
+    await User.findByIdAndUpdate(userId, {
       name,
       email,
       gender,
       dob,
     });
-    const addressesString = JSON.stringify(addresses);
-    if (user.addresses.length > 0) {
-      await User.findByIdAndUpdate(userId, {
-        $set: { "addresses.0": addressesString },
-      });
-      return res.status(200).json({ message: "Updated Successfully" });
-    }
     await User.findByIdAndUpdate(userId, {
-      $push: { addresses: addressesString },
+      $push: { address },
     });
     return res.status(200).json({ message: "Updated Successfully" });
   } catch (error) {
@@ -96,7 +89,7 @@ const handleUserDetails = async (req, res) => {
 // Seller Register -->
 const handleSellerRegister = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, name, website, address, bankDetails } = req.body;
     const exisitingSeller = await Seller.findOne({ email });
     if (exisitingSeller) {
       return res
@@ -104,7 +97,15 @@ const handleSellerRegister = async (req, res) => {
         .json({ message: "Seller already exists, Please Login." });
     }
     const hashedPassword = await bcrypt.hashSync(password, salt);
-    const seller = await Seller.create({ email, password: hashedPassword });
+    const seller = await Seller.create({
+      email,
+      password: hashedPassword,
+      name,
+      website,
+    });
+    await Seller.findByIdAndUpdate(seller._id, {
+      $push: { address, bankDetails },
+    });
     const token = jwt.sign(
       { id: seller._id, role: "seller" },
       process.env.JWT_SECRET
@@ -134,7 +135,7 @@ const handleSellerLogin = async (req, res) => {
     if (!verify)
       return res.status(401).json({ message: "Unauthorized Access!" });
     let isComplete = false;
-    if (seller.have_business) {
+    if (seller.address.lenth > 0) {
       isComplete = true;
     }
     const token = jwt.sign(
@@ -143,7 +144,7 @@ const handleSellerLogin = async (req, res) => {
     );
     return res.status(200).json({
       token,
-      isComplete: false,
+      isComplete,
       email: email,
     });
   } catch (error) {
