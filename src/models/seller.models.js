@@ -10,6 +10,10 @@ const sellerSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  have_business: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const Seller = mongoose.model("Seller", sellerSchema);

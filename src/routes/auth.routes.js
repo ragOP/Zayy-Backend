@@ -4,6 +4,7 @@ const {
   handleUserLogin,
   handleUserDetails,
   handleSellerRegister,
+  handleSellerLogin,
 } = require("../controllers/auth.controllers");
 const { auth } = require("../middlewares/protectedRoutes.middlewares");
 
@@ -27,5 +28,5 @@ router.route("/addDetails").post(auth, handleUserDetails);
 
 // Seller Login Route -->
 router.route("/sellerRegister").post(handleSellerRegister);
-
+router.route("/sellerlogin").post(handleSellerLogin);
 module.exports = router;
