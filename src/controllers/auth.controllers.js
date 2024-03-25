@@ -7,7 +7,7 @@ const User = require("../models/users.models");
 require("dotenv").config();
 
 // Hardcoded OTP As of Now
-const OTP = "123456789";
+const OTP = "123456";
 
 // Admin Login -->
 const handleLoginAdmin = async (req, res) => {
