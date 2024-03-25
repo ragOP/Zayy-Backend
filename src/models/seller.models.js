@@ -14,6 +14,10 @@ const sellerSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  logo: {
+    type: String,
+    required: true,
+  },
   website: {
     type: String,
   },
@@ -69,6 +73,11 @@ const sellerSchema = new mongoose.Schema({
       },
     },
   ],
+  business_type: {
+    type: String,
+    enum: ["boutique", "brand"],
+    required: true,
+  },
 });
 
 const Seller = mongoose.model("Seller", sellerSchema);
