@@ -3,6 +3,7 @@ const salt = bcrypt.genSaltSync(10);
 const jwt = require("jsonwebtoken");
 const Admin = require("../models/admin.models");
 const User = require("../models/users.models");
+const Seller = require("../models/seller.models");
 
 require("dotenv").config();
 
@@ -15,8 +16,8 @@ const handleLoginAdmin = async (req, res) => {
     const { email, password } = req.body;
     const user = await Admin.findOne({ email });
     if (!user) return res.status(404).json({ message: "No Admin Found!" });
-    const hashedPassword = bcrypt.compareSync(password, user.password);
-    if (!hashedPassword)
+    const verify = bcrypt.compareSync(password, user.password);
+    if (!verify)
       return res.status(401).json({ message: "Unauthorized Access!" });
     const token = jwt.sign(
       {
@@ -92,8 +93,69 @@ const handleUserDetails = async (req, res) => {
   }
 };
 
+// Seller Register -->
+const handleSellerRegister = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const exisitingSeller = await Seller.findOne({ email });
+    if (exisitingSeller) {
+      return res
+        .status(400)
+        .json({ message: "Seller already exists, Please Login." });
+    }
+    const hashedPassword = await bcrypt.hashSync(password, salt);
+    const seller = await Seller.create({ email, password: hashedPassword });
+    const token = jwt.sign(
+      { id: seller._id, role: "seller" },
+      process.env.JWT_SECRET
+    );
+    return res.status(200).json({
+      token,
+      isComplete: false,
+      email: email,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "err " + error });
+  }
+};
+
+// Seller Login -->
+const handleSellerLogin = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const seller = await Seller.findOne({ email });
+    if (!seller) {
+      return res.status(400).json({
+        message: "Seller does not exists.",
+      });
+    }
+    const verify = bcrypt.compareSync(password, seller.password);
+    if (!verify)
+      return res.status(401).json({ message: "Unauthorized Access!" });
+    let isComplete = false;
+    if (seller.have_business) {
+      isComplete = true;
+    }
+    const token = jwt.sign(
+      { id: seller._id, role: "seller" },
+      process.env.JWT_SECRET
+    );
+    return res.status(200).json({
+      token,
+      isComplete: false,
+      email: email,
+    });
+  } catch (error) {
+    console.log(err);
+    res.status(500).json({ message: "err " + err });
+  }
+};
+
 module.exports = {
   handleLoginAdmin,
   handleUserLogin,
   handleUserDetails,
+  handleSellerRegister,
+  handleSellerLogin,
 };
