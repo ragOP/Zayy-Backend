@@ -17,13 +17,16 @@ const handlecreateProduct = async (req, res) => {
       category,
       type,
     } = req.body;
-
     const imageUrls = [];
-    for (const file of req.files) {
-      const uploadedImage = await cloudinary.upload(file.path);
-      imageUrls.push(uploadedImage.secure_url);
+    console.log(req.files);
+    try {
+      for (const file of req.files) {
+        const uploadedImage = await cloudinary.upload(file.path);
+        imageUrls.push(uploadedImage.secure_url);
+      }
+    } catch (error) {
+      console.error("Error uploading images:", error);
     }
-
     const product = await Product.create({
       name,
       price,
@@ -46,11 +49,6 @@ const handlecreateProduct = async (req, res) => {
   }
 };
 
-const handleTT = (req, res) => {
-  res.send("Hello");
-};
-
 module.exports = {
   handlecreateProduct,
-  handleTT,
 };

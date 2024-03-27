@@ -53,7 +53,6 @@ const seller = async (req, res, next) => {
     ) {
       token = req.headers.authorization.split(" ")[1];
     }
-    console.log(token);
 
     if (!token) {
       return res
@@ -61,7 +60,7 @@ const seller = async (req, res, next) => {
         .json({ message: "You are not logged in. Please login to get access" });
     }
 
-    const data = jwt.verify(token, process.env.JWT_KEY);
+    const data = jwt.verify(token, process.env.JWT_SECRET);
     if (!data) {
       return res
         .status(400)
