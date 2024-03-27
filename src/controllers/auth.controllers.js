@@ -97,7 +97,16 @@ const handleSellerRegister = async (req, res) => {
       name,
       website,
       address,
-      bankDetails,
+      pincode,
+      localty,
+      city,
+      state,
+      country,
+      account_no,
+      ifsc_code,
+      bank_name,
+      branch_name,
+      account_holder_name,
       business_type,
     } = req.body;
     const exisitingSeller = await Seller.findOne({ email });
@@ -119,10 +128,18 @@ const handleSellerRegister = async (req, res) => {
       name,
       website,
       logo: logoUrl,
+      address,
+      pincode,
+      localty,
+      city,
+      state,
+      country,
+      account_no,
+      ifsc_code,
+      bank_name,
+      branch_name,
+      account_holder_name,
       business_type,
-    });
-    await Seller.findByIdAndUpdate(seller._id, {
-      $push: { address, bankDetails },
     });
     const token = jwt.sign(
       { id: seller._id, role: "seller" },

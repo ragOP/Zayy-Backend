@@ -17,28 +17,24 @@ const userSchema = new mongoose.Schema(
       type: String,
     },
     dob: Date,
-    address: [
-      {
-        pincode: {
-          type: Number,
-        },
-        address: {
-          type: String,
-        },
-        localty: {
-          type: String,
-        },
-        city: {
-          type: String,
-        },
-        state: {
-          type: String,
-        },
-        type: {
-          type: String,
-        },
-      },
-    ],
+    pincode: {
+      type: Number,
+    },
+    address: {
+      type: String,
+    },
+    localty: {
+      type: String,
+    },
+    city: {
+      type: String,
+    },
+    state: {
+      type: String,
+    },
+    type: {
+      type: String,
+    },
   },
   { timestamps: true }
 );
