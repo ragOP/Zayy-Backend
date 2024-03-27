@@ -5,12 +5,12 @@ const { handlecreateProduct } = require("../controllers/seller.controllers");
 const { seller } = require("../middlewares/protectedRoutes.middlewares");
 
 const router = express.Router();
-const upload = multer({ storage: storage, array: "images", maxCount: 5 });
+const upload = multer({ storage: storage });
 
 // Add New Product Route -->
 router
   .route("/addProduct")
-  .post(seller, upload.array("images"), handlecreateProduct);
+  .post(seller, upload.array("images", 5), handlecreateProduct);
 
 // Error handling middleware -->
 router.use((err, req, res, next) => {

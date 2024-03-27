@@ -33,8 +33,8 @@ const handleLoginAdmin = async (req, res) => {
       token,
     });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: "Internal server error" });
+    console.log(error);
+    res.status(500).json({ message: "err " + error });
   }
 };
 
@@ -62,8 +62,8 @@ const handleUserLogin = async (req, res) => {
     );
     return res.status(200).json({ token, isComplete });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Internal server error" });
+    console.log(error);
+    res.status(500).json({ message: "err " + error });
   }
 };
 
@@ -71,20 +71,34 @@ const handleUserLogin = async (req, res) => {
 const handleUserDetails = async (req, res) => {
   try {
     const userId = req.user.id;
-    const { name, email, gender, dob, address } = req.body;
-    await User.findByIdAndUpdate(userId, {
-      $push: { address },
-    });
+    const {
+      name,
+      email,
+      gender,
+      dob,
+      address,
+      pincode,
+      localty,
+      city,
+      state,
+      type,
+    } = req.body;
     await User.findByIdAndUpdate(userId, {
       name,
       email,
       gender,
       dob,
+      address,
+      pincode,
+      localty,
+      city,
+      state,
+      type,
     });
     return res.status(200).json({ message: "Updated Successfully" });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Internal server error" });
+    console.log(error);
+    res.status(500).json({ message: "err " + error });
   }
 };
 
