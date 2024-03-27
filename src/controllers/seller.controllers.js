@@ -1,4 +1,4 @@
-const Product = require("../models/Product");
+const Product = require("../models/products.model");
 const cloudinary = require("../utils/cloudniary.utils");
 
 // Adding New Product -->
@@ -15,9 +15,14 @@ const handlecreateProduct = async (req, res) => {
       totalstock,
       instock,
       category,
-      collection,
       type,
     } = req.body;
+
+    const imageUrls = [];
+    for (const file of req.files) {
+      const uploadedImage = await cloudinary.upload(file.path);
+      imageUrls.push(uploadedImage.secure_url);
+    }
 
     const product = await Product.create({
       name,
@@ -29,8 +34,8 @@ const handlecreateProduct = async (req, res) => {
       totalstock,
       instock,
       category,
-      collection,
       type,
+      images: imageUrls,
       createdBy: id,
       status: "pending",
     });
@@ -41,6 +46,11 @@ const handlecreateProduct = async (req, res) => {
   }
 };
 
+const handleTT = (req, res) => {
+  res.send("Hello");
+};
+
 module.exports = {
   handlecreateProduct,
+  handleTT,
 };

@@ -1,16 +1,22 @@
 const express = require("express");
 const multer = require("multer");
 const { storage } = require("../utils/multer.utils");
-const { handlecreateProduct } = require("../controllers/seller.controllers");
+const {
+  handlecreateProduct,
+  handleTT,
+} = require("../controllers/seller.controllers");
 const { seller } = require("../middlewares/protectedRoutes.middlewares");
 
 const router = express.Router();
 const upload = multer({ storage: storage, array: "images", maxCount: 5 });
 
-// New Product Add Route -->
-router.route("/").post(seller, upload.array("images"), handlecreateProduct);
+// Add New Product Route -->
+router
+  .route("/addProduct")
+  .post(seller, upload.array("images"), handlecreateProduct);
+router.route("/new").get(handleTT);
 
-// Error handling middleware
+// Error handling middleware -->
 router.use((err, req, res, next) => {
   console.error("Error in request:", err);
   if (err instanceof multer.MulterError) {

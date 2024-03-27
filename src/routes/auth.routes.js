@@ -26,7 +26,7 @@ router
   .post(upload.single("logo"), handleSellerRegister);
 router.route("/sellerlogin").post(handleSellerLogin);
 
-// Error handling middleware
+// Error handling middleware -->
 router.use((err, req, res, next) => {
   console.error("Error in request:", err);
   if (err instanceof multer.MulterError) {

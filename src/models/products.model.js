@@ -4,11 +4,9 @@ const productSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: true,
     },
     price: {
       type: Number,
-      required: true,
     },
     discount: {
       type: Number,
@@ -29,23 +27,15 @@ const productSchema = new mongoose.Schema(
     },
     totalstock: {
       type: Number,
-      required: true,
     },
     instock: {
       type: Number,
-      required: true,
     },
     category: {
       type: String,
-      required: true,
-    },
-    collection: {
-      type: String,
-      required: true,
     },
     type: {
       type: String,
-      required: true,
     },
     images: [
       {
