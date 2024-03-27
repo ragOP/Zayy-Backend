@@ -24,7 +24,7 @@ const handleLoginAdmin = async (req, res) => {
     const token = jwt.sign(
       {
         id: user._id,
-        role: "Admin",
+        role: "admin",
       },
       process.env.JWT_SECRET
     );
@@ -107,9 +107,12 @@ const handleSellerRegister = async (req, res) => {
         .json({ message: "Seller already exists, Please Login." });
     }
     const hashedPassword = await bcrypt.hashSync(password, salt);
-    const logoUrlResponse = await cloudinary.uploader.upload(req.file.path);
-    const logoUrl = logoUrlResponse.secure_url;
-    fs.unlinkSync(req.file.path);
+    let logoUrl = "";
+    if (req.file) {
+      const logoUrlResponse = await cloudinary.uploader.upload(req.file.path);
+      logoUrl = logoUrlResponse.secure_url;
+      fs.unlinkSync(req.file.path);
+    }
     const seller = await Seller.create({
       email,
       password: hashedPassword,
