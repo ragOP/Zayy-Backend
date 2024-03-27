@@ -1,5 +1,6 @@
 const Product = require("../models/products.model");
 const cloudinary = require("../utils/cloudniary.utils");
+const fs = require("fs");
 
 // Adding New Product -->
 const handlecreateProduct = async (req, res) => {
@@ -17,15 +18,14 @@ const handlecreateProduct = async (req, res) => {
       category,
       type,
     } = req.body;
+
     const imageUrls = [];
-    console.log(req.files);
-    try {
+    if (req.files) {
       for (const file of req.files) {
-        const uploadedImage = await cloudinary.upload(file.path);
+        const uploadedImage = await cloudinary.uploader.upload(file.path);
+        fs.unlinkSync(file.path);
         imageUrls.push(uploadedImage.secure_url);
       }
-    } catch (error) {
-      console.error("Error uploading images:", error);
     }
     const product = await Product.create({
       name,
@@ -44,8 +44,8 @@ const handlecreateProduct = async (req, res) => {
     });
     res.status(201).json({ message: "Product created successfully", product });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Internal Server Error" });
+    console.log(error);
+    res.status(500).json({ message: "err " + error });
   }
 };
 
