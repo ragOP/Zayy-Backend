@@ -2,14 +2,20 @@ const express = require("express");
 const {
   handleGetAllProducts,
   handleGetAllPendingProducts,
+  handleApproveProduct,
 } = require("../controllers/admin.controllers");
 const { admin } = require("../middlewares/protectedRoutes.middlewares");
 
 const router = express.Router();
 
-// Admin Login Route -->
+// Get all product route -->
 router.route("/getAllProducts").get(admin, handleGetAllProducts);
+
+// Get all approved pending route -->
 router.route("/getAllPendingProducts").get(admin, handleGetAllPendingProducts);
+
+// Update status of product -->
+router.route("/approveProduct/:id").patch(admin, handleApproveProduct);
 
 // Error handling middleware -->
 router.use((err, req, res, next) => {
