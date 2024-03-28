@@ -43,7 +43,7 @@ const handlecreateProduct = async (req, res) => {
       status: "pending",
     });
     res.status(201).json({ message: "Product created successfully", product });
-  } catch (err) {
+  } catch (error) {
     console.log(error);
     res.status(500).json({ message: "err " + error });
   }

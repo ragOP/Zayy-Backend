@@ -17,10 +17,10 @@ const handleLoginAdmin = async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await Admin.findOne({ email });
-    if (!user) return res.status(404).json({ message: "No Admin Found!" });
+    if (!user) return res.status(404).json({ message: "No admin found!" });
     const verify = bcrypt.compareSync(password, user.password);
     if (!verify)
-      return res.status(401).json({ message: "Unauthorized Access!" });
+      return res.status(401).json({ message: "Unauthorized access!" });
     const token = jwt.sign(
       {
         id: user._id,
@@ -95,7 +95,7 @@ const handleUserDetails = async (req, res) => {
       state,
       type,
     });
-    return res.status(200).json({ message: "Updated Successfully" });
+    return res.status(200).json({ message: "Updated successfully" });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "err " + error });
@@ -181,7 +181,7 @@ const handleSellerLogin = async (req, res) => {
     }
     const verify = bcrypt.compareSync(password, seller.password);
     if (!verify)
-      return res.status(401).json({ message: "Unauthorized Access!" });
+      return res.status(401).json({ message: "Unauthorized access!" });
     const token = jwt.sign(
       { id: seller._id, role: "seller" },
       process.env.JWT_SECRET
@@ -191,8 +191,8 @@ const handleSellerLogin = async (req, res) => {
       email: email,
     });
   } catch (error) {
-    console.log(err);
-    res.status(500).json({ message: "err " + err });
+    console.log(error);
+    res.status(500).json({ message: "err " + error });
   }
 };
 
