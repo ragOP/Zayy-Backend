@@ -191,8 +191,8 @@ const handleSellerLogin = async (req, res) => {
       email: email,
     });
   } catch (error) {
-    console.log(err);
-    res.status(500).json({ message: "err " + err });
+    console.log(error);
+    res.status(500).json({ message: "err " + error });
   }
 };
 
