@@ -52,7 +52,6 @@ const sellerSchema = new mongoose.Schema({
   },
   business_type: {
     type: String,
-    enum: ["boutique", "brand"],
   },
 });
 
