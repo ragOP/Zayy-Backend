@@ -49,6 +49,18 @@ const handlecreateProduct = async (req, res) => {
   }
 };
 
+const handleGetProducts = async (req, res) => {
+  try {
+    const id = req.user.id;
+    const products = await Product.find({ createdBy: id });
+    res.status(200).json(products);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "err " + error });
+  }
+};
+
 module.exports = {
   handlecreateProduct,
+  handleGetProducts,
 };
