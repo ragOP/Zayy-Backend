@@ -14,7 +14,6 @@ const productSchema = new mongoose.Schema(
     },
     discount_type: {
       type: String,
-      enum: ["percentage", "amount"],
       default: "percentage",
     },
     salesprice: {
@@ -49,7 +48,6 @@ const productSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["pending", "approved", "rejected"],
       default: "pending",
     },
   },
