@@ -1,4 +1,5 @@
 const Product = require("../models/products.model");
+const Seller = require("../models/seller.models");
 const User = require("../models/users.models");
 
 // Get All Products -->
@@ -61,11 +62,26 @@ const handleApproveProduct = async (req, res) => {
 // Get All Users -->
 const handleGetAllUsers = async (req, res) => {
   try {
-    let user = await User.find({});
-    if (!user) return res.send({ message: "No user found" });
+    let users = await User.find({});
+    if (!users) return res.send({ message: "No user found" });
     return res
       .status(200)
-      .json({ message: "All user fetched successfully", user });
+      .json({ message: "All user fetched successfully", users });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "err " + error });
+  }
+};
+
+// Get All Seller -->
+const handleGetAllSeller = async (req, res) => {
+  const { business_type } = req.body;
+  try {
+    const sellers = await Seller.find({ business_type });
+    if (!sellers) return res.send({ message: "No seller found" });
+    return res
+      .status(200)
+      .json({ message: `All ${business_type} fetched successfully`, sellers });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "err " + error });
@@ -77,4 +93,5 @@ module.exports = {
   handleGetAllPendingProducts,
   handleApproveProduct,
   handleGetAllUsers,
+  handleGetAllSeller,
 };
