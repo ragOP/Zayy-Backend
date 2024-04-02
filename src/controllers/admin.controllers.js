@@ -5,7 +5,7 @@ const User = require("../models/users.models");
 // Get All Products -->
 const handleGetAllProducts = async (req, res) => {
   try {
-    const products = await Product.find({ status: "approved" });
+    const products = await Product.find({});
     if (!products || products.length === 0) {
       return res.status(404).json({ message: "No approved products found" });
     }
@@ -88,10 +88,25 @@ const handleGetAllSeller = async (req, res) => {
   }
 };
 
+// Get Specific product -->
+const handleGetSpecificProduct = async (req, res) => {
+  const id = req.params.id;
+  try {
+    const product = await Product.find({ _id: id });
+    if (!product)
+      return res.status(404).json({ message: "Product Not Found!" });
+    return res.status(200).json(product);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "err " + error });
+  }
+};
+
 module.exports = {
   handleGetAllProducts,
   handleGetAllPendingProducts,
   handleApproveProduct,
   handleGetAllUsers,
   handleGetAllSeller,
+  handleGetSpecificProduct,
 };
