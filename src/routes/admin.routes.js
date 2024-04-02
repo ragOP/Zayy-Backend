@@ -5,6 +5,7 @@ const {
   handleApproveProduct,
   handleGetAllUsers,
   handleGetAllSeller,
+  handleGetSpecificProduct,
 } = require("../controllers/admin.controllers");
 const { admin } = require("../middlewares/protectedRoutes.middlewares");
 
@@ -24,6 +25,9 @@ router.route("/getAllUser").get(admin, handleGetAllUsers);
 
 // Get all seller -->
 router.route("/getAllSeller").get(admin, handleGetAllSeller);
+
+// Get Specific Post -->
+router.route("/getProduct/:id").get(admin, handleGetSpecificProduct);
 
 // Error handling middleware -->
 router.use((err, req, res, next) => {
