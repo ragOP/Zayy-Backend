@@ -24,7 +24,7 @@ router.route("/approveProduct/:id").patch(admin, handleApproveProduct);
 router.route("/getAllUser").get(admin, handleGetAllUsers);
 
 // Get all seller -->
-router.route("/getAllSeller").get(admin, handleGetAllSeller);
+router.route("/getAllSeller").post(admin, handleGetAllSeller);
 
 // Get Specific Post -->
 router.route("/getProduct/:id").get(admin, handleGetSpecificProduct);
