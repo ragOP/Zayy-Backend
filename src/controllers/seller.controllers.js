@@ -10,6 +10,7 @@ const handlecreateProduct = async (req, res) => {
       name,
       price,
       discount,
+      description,
       discount_type,
       salesprice,
       onsale,
@@ -39,6 +40,7 @@ const handlecreateProduct = async (req, res) => {
       category,
       type,
       images: imageUrls,
+      description,
       createdBy: id,
       status: "pending",
     });
