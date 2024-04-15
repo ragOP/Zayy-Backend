@@ -27,6 +27,37 @@ exports.handleGetAllBrandProduct = async (req, res) => {
   }
 };
 
+// Get All Brand Name Based On Filter
+exports.handleGetAllBrandNames = async (req, res) => {
+  try {
+    let filter = { business_type: "brand" };
+    if (req.query.search) {
+      filter = {
+        ...filter,
+        name: { $regex: req.query.search, $options: "i" },
+      };
+    }
+
+    const brands = await Seller.find(filter).select("name");
+
+    if (brands.length === 0) {
+      return res.status(200).json({
+        message: "No Matching Result Found!",
+        data: brands,
+      });
+    }
+    return res.status(200).json({
+      message: "Brand names fetched successfully",
+      data: brands,
+    });
+  } catch (err) {
+    console.error(err);
+    return res
+      .status(500)
+      .json({ message: "Error fetching boutique brand names" });
+  }
+};
+
 // Get All Boutique Product
 exports.handleGetAllBoutiqueProduct = async (req, res) => {
   try {
@@ -53,8 +84,8 @@ exports.handleGetAllBoutiqueProduct = async (req, res) => {
   }
 };
 
-// Get All Brand Name Based On Filter
-exports.handleGetAllBrandNames = async (req, res) => {
+// Get All Boutique Name Based On Filter
+exports.handleGetAllBoutiqueNames = async (req, res) => {
   try {
     let filter = { business_type: "boutique" };
     if (req.query.search) {
