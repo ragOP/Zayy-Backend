@@ -3,12 +3,14 @@ const { auth } = require("../middlewares/protectedRoutes.middlewares");
 const {
   handleGetAllBrandProduct,
   handleGetAllBoutiqueProduct,
+  handleGetAllBrandNames,
 } = require("../controllers/user.controllers");
 
 const router = express.Router();
 
 // Brands -->
 router.route("/brands").get(auth, handleGetAllBrandProduct);
+router.route("/brandname").get(auth, handleGetAllBrandNames);
 
 // Boutique -->
 router.route("/boutiques").get(auth, handleGetAllBoutiqueProduct);
