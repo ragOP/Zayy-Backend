@@ -1,24 +1,48 @@
 const Product = require("../models/products.model");
 const Seller = require("../models/seller.models");
 
-// Get All Brand Products
+// Get All Brand Products based on category filter
 exports.handleGetAllBrandProduct = async (req, res) => {
   try {
-    const brands = await Seller.find({ business_type: "brand" });
-    const brandIds = brands.map((brand) => brand._id);
-    const products = await Product.find({ createdBy: { $in: brandIds } }).sort({
-      name: -1,
-    });
-    if (products.length === 0) {
+    if (req.query.category) {
+      let filter = {
+        category: { $regex: req.query.category, $options: "i" },
+      };
+      const brands = await Seller.find({ business_type: "brand" });
+      const brandIds = brands.map((brand) => brand._id);
+      const products = await Product.find({
+        createdBy: { $in: brandIds },
+        ...filter,
+      }).sort({ name: -1 });
+      if (products.length === 0) {
+        return res.status(200).json({
+          message: "No Result Found!",
+          data: products,
+        });
+      }
       return res.status(200).json({
-        message: "No Result Found!",
+        message: "Products fetched successfully for brand",
+        data: products,
+      });
+    } else {
+      const brands = await Seller.find({ business_type: "brand" });
+      const brandIds = brands.map((brand) => brand._id);
+      const products = await Product.find({
+        createdBy: { $in: brandIds },
+      }).sort({
+        name: -1,
+      });
+      if (products.length === 0) {
+        return res.status(200).json({
+          message: "No Result Found!",
+          data: products,
+        });
+      }
+      return res.status(200).json({
+        message: "Products fetched successfully for brand",
         data: products,
       });
     }
-    return res.status(200).json({
-      message: "Products fetched successfully for brand",
-      data: products,
-    });
   } catch (err) {
     console.error(err);
     return res
@@ -27,10 +51,10 @@ exports.handleGetAllBrandProduct = async (req, res) => {
   }
 };
 
-// Get All Brand Name Based On Filter
+// Get All Brand Name Based On Search Filter
 exports.handleGetAllBrandNames = async (req, res) => {
   try {
-    let filter = { business_type: "brand" };
+    let filter = { business_type: "boutique" };
     if (req.query.search) {
       filter = {
         ...filter,
@@ -58,24 +82,48 @@ exports.handleGetAllBrandNames = async (req, res) => {
   }
 };
 
-// Get All Boutique Product
+// Get All Boutique Product based on category filter
 exports.handleGetAllBoutiqueProduct = async (req, res) => {
   try {
-    const brands = await Seller.find({ business_type: "boutique" });
-    const brandIds = brands.map((brand) => brand._id);
-    const products = await Product.find({ createdBy: { $in: brandIds } }).sort({
-      name: -1,
-    });
-    if (products.length === 0) {
+    if (req.query.category) {
+      let filter = {
+        category: { $regex: req.query.category, $options: "i" },
+      };
+      const brands = await Seller.find({ business_type: "boutique" });
+      const brandIds = brands.map((brand) => brand._id);
+      const products = await Product.find({
+        createdBy: { $in: brandIds },
+        ...filter,
+      }).sort({ name: -1 });
+      if (products.length === 0) {
+        return res.status(200).json({
+          message: "No Result Found!",
+          data: products,
+        });
+      }
       return res.status(200).json({
-        message: "No Result Found!",
+        message: "Products fetched successfully for brand",
+        data: products,
+      });
+    } else {
+      const brands = await Seller.find({ business_type: "boutique" });
+      const brandIds = brands.map((brand) => brand._id);
+      const products = await Product.find({
+        createdBy: { $in: brandIds },
+      }).sort({
+        name: -1,
+      });
+      if (products.length === 0) {
+        return res.status(200).json({
+          message: "No Result Found!",
+          data: products,
+        });
+      }
+      return res.status(200).json({
+        message: "Products fetched successfully for brand",
         data: products,
       });
     }
-    return res.status(200).json({
-      message: "Products fetched successfully for brand",
-      data: products,
-    });
   } catch (err) {
     console.error(err);
     return res
@@ -84,7 +132,7 @@ exports.handleGetAllBoutiqueProduct = async (req, res) => {
   }
 };
 
-// Get All Boutique Name Based On Filter
+// Get All Brand Name Based On search Filter
 exports.handleGetAllBoutiqueNames = async (req, res) => {
   try {
     let filter = { business_type: "boutique" };
