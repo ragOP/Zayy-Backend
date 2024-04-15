@@ -5,6 +5,7 @@ const {
   handleGetAllBoutiqueProduct,
   handleGetAllBrandNames,
   handleGetAllBoutiqueNames,
+  handleGetBrandById,
 } = require("../controllers/user.controllers");
 
 const router = express.Router();
@@ -12,10 +13,12 @@ const router = express.Router();
 // Brands -->
 router.route("/brands").get(auth, handleGetAllBrandProduct);
 router.route("/brandname").get(auth, handleGetAllBrandNames);
+router.route("/brand/:id").get(auth, handleGetBrandById);
 
 // Boutique -->
 router.route("/boutiques").get(auth, handleGetAllBoutiqueProduct);
 router.route("/boutiquename").get(auth, handleGetAllBoutiqueNames);
+router.route("/boutique/:id").get(auth, handleGetBrandById);
 
 // Error handling middleware -->
 router.use((err, req, res, next) => {

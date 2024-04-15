@@ -43,8 +43,8 @@ exports.handleGetAllBrandProduct = async (req, res) => {
         data: products,
       });
     }
-  } catch (err) {
-    console.error(err);
+  } catch (error) {
+    console.error(error);
     return res
       .status(500)
       .json({ message: "Error fetching products for brand sellers" });
@@ -74,8 +74,8 @@ exports.handleGetAllBrandNames = async (req, res) => {
       message: "Brand names fetched successfully",
       data: brands,
     });
-  } catch (err) {
-    console.error(err);
+  } catch (error) {
+    console.error(error);
     return res
       .status(500)
       .json({ message: "Error fetching boutique brand names" });
@@ -124,8 +124,8 @@ exports.handleGetAllBoutiqueProduct = async (req, res) => {
         data: products,
       });
     }
-  } catch (err) {
-    console.error(err);
+  } catch (error) {
+    console.error(error);
     return res
       .status(500)
       .json({ message: "Error fetching products for brand sellers" });
@@ -155,10 +155,31 @@ exports.handleGetAllBoutiqueNames = async (req, res) => {
       message: "Brand names fetched successfully",
       data: brands,
     });
-  } catch (err) {
-    console.error(err);
+  } catch (error) {
+    console.error(error);
     return res
       .status(500)
       .json({ message: "Error fetching boutique brand names" });
+  }
+};
+
+// Get Brand or Boutique by id
+exports.handleGetBrandById = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const data = await Seller.findById(id);
+    if (!data) {
+      return res.status(200).json({
+        message: "No Matching Result Found!",
+        data,
+      });
+    }
+    return res.status(200).json({
+      message: "Brand fetched successfully",
+      data,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Error fetching brand Category" });
   }
 };
