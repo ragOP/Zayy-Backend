@@ -54,7 +54,7 @@ exports.handleGetAllBrandProduct = async (req, res) => {
 // Get All Brand Name Based On Search Filter
 exports.handleGetAllBrandNames = async (req, res) => {
   try {
-    let filter = { business_type: "boutique" };
+    let filter = { business_type: "brand" };
     if (req.query.search) {
       filter = {
         ...filter,
@@ -76,9 +76,7 @@ exports.handleGetAllBrandNames = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    return res
-      .status(500)
-      .json({ message: "Error fetching boutique brand names" });
+    return res.status(500).json({ message: "Error fetching brand names" });
   }
 };
 
@@ -181,5 +179,67 @@ exports.handleGetBrandById = async (req, res) => {
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Error fetching brand Category" });
+  }
+};
+
+// Get Products based on filter and sorting
+exports.handleGetAllProducts = async (req, res) => {
+  try {
+    let filters = {};
+    let sellerfilter = {};
+    let sorting = "";
+    if (req.body.brand && req.body.brand.length > 0) {
+      sellerfilter.name = Array.isArray(req.body.brand)
+        ? { $in: req.body.brand }
+        : req.body.brand;
+    }
+    if (req.body.business) {
+      if (req.body.business === 1) {
+        sellerfilter.business_type = "brand";
+      }
+      if (req.body.business === 2) {
+        sellerfilter.business_type = "boutique";
+      }
+    }
+    if (req.body.boutique && req.body.boutique.length > 0) {
+      filters.boutique = Array.isArray(req.body.boutique)
+        ? { $in: req.body.boutique }
+        : req.body.boutique;
+    }
+    if (req.body.category && req.body.category.length > 0) {
+      filters.category = Array.isArray(req.body.category)
+        ? { $in: req.body.category }
+        : req.body.category;
+    }
+    if (req.body.sorting) {
+      if (req.body.sorting === "New") {
+        sorting = { createdAt: -1 };
+      }
+      if (req.body.sorting === "Price HTL") {
+        sorting = { price: -1 };
+      }
+      if (req.body.sorting === "Price LTH") {
+        sorting = { price: 1 };
+      }
+    }
+    const sellers = await Seller.find(sellerfilter);
+    const sellerIds = sellers.map((seller) => seller._id);
+    filters.createdBy = { $in: sellerIds };
+    const products = await Product.find(filters).sort(sorting || {});
+
+    if (products.length === 0) {
+      return res.status(200).json({
+        message: "No Result Found!",
+        data: products,
+      });
+    }
+
+    return res.status(200).json({
+      message: "Fetched Successfully",
+      data: products,
+    });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ message: "Internal server error." });
   }
 };
