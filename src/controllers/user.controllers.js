@@ -183,3 +183,53 @@ exports.handleGetBrandById = async (req, res) => {
     return res.status(500).json({ message: "Error fetching brand Category" });
   }
 };
+
+// Products
+exports.products = async (req, res) => {
+  try {
+    let filters = {};
+    let sorting = "";
+    if (req.body.brand.length) {
+      filters.brand = { $in: req.body.brand };
+    }
+    if (req.body.boutique.length) {
+      filters.boutique = { $in: req.body.boutique };
+    }
+    if (req.body.category.length) {
+      filters.category = { $in: req.body.category };
+    }
+    if (req.body.business) {
+      if (req.body.business === 1) {
+        filters.brand = { $exists: true };
+      }
+      if (req.body.business === 2) {
+        filters.boutique = { $exists: true };
+      }
+    }
+    if (req.body.sorting) {
+      if (req.body.sorting === "New") {
+        sorting = { createdAt: -1 };
+      }
+      if (req.body.sorting === "Price HTL") {
+        sorting = { price: -1 };
+      }
+      if (req.body.sorting === "Price LTH") {
+        sorting = { price: 1 };
+      }
+    }
+    const products = await Product.find(filters).sort(sorting);
+    if (products.length === 0) {
+      return res.status(200).json({
+        message: "No Result Found!",
+        data: products,
+      });
+    }
+    return res.status(200).json({
+      message: "Fetched Successfully",
+      data: products,
+    });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+};
