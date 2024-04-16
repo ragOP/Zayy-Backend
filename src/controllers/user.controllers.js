@@ -193,7 +193,14 @@ exports.handleGetAllProducts = async (req, res) => {
         ? { $in: req.body.brand }
         : req.body.brand;
     }
-    console.log(sellerfilter);
+    if (req.body.business) {
+      if (req.body.business === 1) {
+        sellerfilter.business_type = "brand";
+      }
+      if (req.body.business === 2) {
+        sellerfilter.business_type = "boutique";
+      }
+    }
     if (req.body.boutique && req.body.boutique.length > 0) {
       filters.boutique = Array.isArray(req.body.boutique)
         ? { $in: req.body.boutique }
@@ -203,14 +210,6 @@ exports.handleGetAllProducts = async (req, res) => {
       filters.category = Array.isArray(req.body.category)
         ? { $in: req.body.category }
         : req.body.category;
-    }
-    if (req.body.business) {
-      if (req.body.business === 1) {
-        filters.brand = { $exists: true };
-      }
-      if (req.body.business === 2) {
-        filters.boutique = { $exists: true };
-      }
     }
     if (req.body.sorting) {
       if (req.body.sorting === "New") {
@@ -226,7 +225,6 @@ exports.handleGetAllProducts = async (req, res) => {
     const sellers = await Seller.find(sellerfilter);
     const sellerIds = sellers.map((seller) => seller._id);
     filters.createdBy = { $in: sellerIds };
-    console.log(filters);
     const products = await Product.find(filters).sort(sorting || {});
 
     if (products.length === 0) {
