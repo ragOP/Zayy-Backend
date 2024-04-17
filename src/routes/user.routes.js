@@ -22,7 +22,7 @@ router.route("/boutiquename").get(auth, handleGetAllBoutiqueNames);
 router.route("/boutique/:id").get(auth, handleGetBrandById);
 
 // Product -->
-router.route("/products").get(auth, handleGetAllProducts);
+router.route("/products").post(auth, handleGetAllProducts);
 
 // Error handling middleware -->
 router.use((err, req, res, next) => {
