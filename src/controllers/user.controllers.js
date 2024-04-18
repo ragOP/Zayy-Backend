@@ -1,5 +1,8 @@
+const Banner = require("../models/banner.models");
 const Product = require("../models/products.model");
 const Seller = require("../models/seller.models");
+const cloudinary = require("../utils/cloudniary.utils");
+const fs = require("fs");
 
 // Get All Brand Products based on category filter
 exports.handleGetAllBrandProduct = async (req, res) => {
@@ -238,6 +241,45 @@ exports.handleGetAllProducts = async (req, res) => {
       message: "Fetched Successfully",
       data: products,
     });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+};
+
+// exports.handleBanners = async (req, res) => {
+//   try {
+//     const { name, brandId } = req.body;
+
+//     let logoUrl = "";
+//     if (req.file) {
+//       const logoUrlResponse = await cloudinary.uploader.upload(req.file.path);
+//       logoUrl = logoUrlResponse.secure_url;
+//       fs.unlinkSync(req.file.path);
+//     }
+
+//     const newBanner = new Banner({
+//       name: name,
+//       brandId: brandId,
+//       image: logoUrl,
+//     });
+//     const savedBanner = await newBanner.save();
+//     res
+//       .status(201)
+//       .json({ message: "Banner created successfully", banner: savedBanner });
+//   } catch (error) {
+//     console.error("Error:", error);
+//     res.status(500).json({ message: "Internal server error." });
+//   }
+// };
+
+exports.handleBanners = async (req, res) => {
+  try {
+    const data = await Banner.find({});
+    if (data.length === 0) {
+      return res.status(404).json({ message: "No banners found." });
+    }
+    res.status(200).json({ message: "Fetched Successfully", data: data });
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ message: "Internal server error." });

@@ -1,5 +1,8 @@
 const express = require("express");
+const multer = require("multer");
+const { storage } = require("../utils/multer.utils");
 const { auth } = require("../middlewares/protectedRoutes.middlewares");
+const upload = multer({ storage: storage });
 const {
   handleGetAllBrandProduct,
   handleGetAllBoutiqueProduct,
@@ -7,6 +10,7 @@ const {
   handleGetAllBoutiqueNames,
   handleGetBrandById,
   handleGetAllProducts,
+  handleBanners,
 } = require("../controllers/user.controllers");
 
 const router = express.Router();
@@ -23,6 +27,7 @@ router.route("/boutique/:id").get(auth, handleGetBrandById);
 
 // Product -->
 router.route("/products").post(auth, handleGetAllProducts);
+router.route("/banners").get(auth, handleBanners);
 
 // Error handling middleware -->
 router.use((err, req, res, next) => {
