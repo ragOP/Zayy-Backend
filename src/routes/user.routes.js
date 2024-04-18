@@ -4,8 +4,8 @@ const { storage } = require("../utils/multer.utils");
 const { auth } = require("../middlewares/protectedRoutes.middlewares");
 const upload = multer({ storage: storage });
 const {
-  handleGetAllBrandProduct,
-  handleGetAllBoutiqueProduct,
+  handleGetAllBrand,
+  handleGetAllBoutique,
   handleGetAllBrandNames,
   handleGetAllBoutiqueNames,
   handleGetBrandById,
@@ -16,12 +16,12 @@ const {
 const router = express.Router();
 
 // Brands -->
-router.route("/brands").get(auth, handleGetAllBrandProduct);
+router.route("/brands").get(auth, handleGetAllBrand);
 router.route("/brandname").get(auth, handleGetAllBrandNames);
 router.route("/brand/:id").get(auth, handleGetBrandById);
 
 // Boutique -->
-router.route("/boutiques").get(auth, handleGetAllBoutiqueProduct);
+router.route("/boutiques").get(auth, handleGetAllBoutique);
 router.route("/boutiquename").get(auth, handleGetAllBoutiqueNames);
 router.route("/boutique/:id").get(auth, handleGetBrandById);
 
