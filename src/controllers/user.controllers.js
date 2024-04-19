@@ -240,27 +240,40 @@ exports.handleBanners = async (req, res) => {
   }
 };
 
+// exports.handleThumbnail = async (req, res) => {
+//   try {
+//     const { name, brandId, type } = req.body;
+
+//     let logoUrl = "";
+//     if (req.file) {
+//       const logoUrlResponse = await cloudinary.uploader.upload(req.file.path);
+//       logoUrl = logoUrlResponse.secure_url;
+//       fs.unlinkSync(req.file.path);
+//     }
+
+//     const newThumbnail = new Thumbnail({
+//       name: name,
+//       brandId: brandId,
+//       type: type,
+//       image: logoUrl,
+//     });
+//     const savedThumbnail = await newThumbnail.save();
+//     res
+//       .status(201)
+//       .json({ message: "Banner created successfully", banner: savedThumbnail });
+//   } catch (error) {
+//     console.error("Error:", error);
+//     res.status(500).json({ message: "Internal server error." });
+//   }
+// };
+
 exports.handleThumbnail = async (req, res) => {
   try {
-    const { name, brandId, type } = req.body;
-
-    let logoUrl = "";
-    if (req.file) {
-      const logoUrlResponse = await cloudinary.uploader.upload(req.file.path);
-      logoUrl = logoUrlResponse.secure_url;
-      fs.unlinkSync(req.file.path);
+    const data = await Thumbnail.find({});
+    if (data.length === 0) {
+      return res.status(404).json({ message: "No banners found." });
     }
-
-    const newThumbnail = new Thumbnail({
-      name: name,
-      brandId: brandId,
-      type: type,
-      image: logoUrl,
-    });
-    const savedThumbnail = await newThumbnail.save();
-    res
-      .status(201)
-      .json({ message: "Banner created successfully", banner: savedThumbnail });
+    res.status(200).json({ message: "Fetched Successfully", data: data });
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ message: "Internal server error." });
