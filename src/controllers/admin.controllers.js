@@ -1,7 +1,10 @@
 const Banner = require("../models/banner.models");
 const Product = require("../models/products.model");
 const Seller = require("../models/seller.models");
+const Thumbnail = require("../models/thumbnail.models");
 const User = require("../models/users.models");
+const cloudinary = require("../utils/cloudniary.utils");
+const fs = require("fs");
 
 // Get All Products -->
 const handleGetAllProducts = async (req, res) => {
