@@ -41,7 +41,7 @@ router.route("/getProduct/:id").get(admin, handleGetSpecificProduct);
 router.route("/banners").post(upload.single("image"), admin, handlePostBanners);
 router
   .route("/thumbnails")
-  .post(upload.single("imgae"), admin, handlePostThumbnail);
+  .post(upload.single("image"), admin, handlePostThumbnail);
 
 // Error handling middleware -->
 router.use((err, req, res, next) => {
