@@ -1,4 +1,5 @@
 const express = require("express");
+const { storage } = require("../utils/multer.utils");
 const {
   handleGetAllProducts,
   handleGetAllPendingProducts,
@@ -6,11 +7,14 @@ const {
   handleGetAllUsers,
   handleGetAllSeller,
   handleGetSpecificProduct,
+  handlePostBanners,
+  handlePostThumbnail,
   handlegetAll,
 } = require("../controllers/admin.controllers");
 const { admin } = require("../middlewares/protectedRoutes.middlewares");
 
 const router = express.Router();
+const upload = multer({ storage: storage });
 
 // Get all product route -->
 router.route("/getAllProducts").get(admin, handleGetAllProducts);
@@ -32,6 +36,13 @@ router
 
 // Get Specific Post -->
 router.route("/getProduct/:id").get(admin, handleGetSpecificProduct);
+
+router
+  .route("/banners")
+  .post(upload.single("images"), admin, handlePostBanners);
+router
+  .route("/thumbnails")
+  .post(upload.single("imgaes"), admin, handlePostThumbnail);
 
 // Error handling middleware -->
 router.use((err, req, res, next) => {

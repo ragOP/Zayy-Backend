@@ -1,3 +1,4 @@
+const Banner = require("../models/banner.models");
 const Product = require("../models/products.model");
 const Seller = require("../models/seller.models");
 const User = require("../models/users.models");
@@ -119,6 +120,59 @@ const handleGetSpecificProduct = async (req, res) => {
   }
 };
 
+// Post Thumbnail
+const handlePostThumbnail = async (req, res) => {
+  try {
+    const { name, brandId, type } = req.body;
+
+    let logoUrl = "";
+    if (req.file) {
+      const logoUrlResponse = await cloudinary.uploader.upload(req.file.path);
+      logoUrl = logoUrlResponse.secure_url;
+      fs.unlinkSync(req.file.path);
+    }
+
+    const data = await Thumbnail.create({
+      name,
+      brandId,
+      type,
+      image: logoUrl,
+    });
+    res
+      .status(201)
+      .json({ message: "Thumbnail created successfully", data: data });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+};
+
+// Post Banner
+const handlePostBanners = async (req, res) => {
+  try {
+    const { name, brandId } = req.body;
+
+    let logoUrl = "";
+    if (req.file) {
+      const logoUrlResponse = await cloudinary.uploader.upload(req.file.path);
+      logoUrl = logoUrlResponse.secure_url;
+      fs.unlinkSync(req.file.path);
+    }
+
+    const data = await Banner.create({
+      name,
+      brandId,
+      image: logoUrl,
+    });
+    res
+      .status(201)
+      .json({ message: "Banner created successfully", data: data });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+};
+
 module.exports = {
   handleGetAllProducts,
   handleGetAllPendingProducts,
@@ -127,4 +181,6 @@ module.exports = {
   handleGetAllSeller,
   handleGetSpecificProduct,
   handlegetAll,
+  handlePostBanners,
+  handlePostThumbnail,
 };
