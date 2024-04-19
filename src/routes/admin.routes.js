@@ -6,6 +6,7 @@ const {
   handleGetAllUsers,
   handleGetAllSeller,
   handleGetSpecificProduct,
+  handlegetAll,
 } = require("../controllers/admin.controllers");
 const { admin } = require("../middlewares/protectedRoutes.middlewares");
 
@@ -24,7 +25,10 @@ router.route("/approveProduct/:id").patch(admin, handleApproveProduct);
 router.route("/getAllUser").get(admin, handleGetAllUsers);
 
 // Get all seller -->
-router.route("/getAllSeller").post(admin, handleGetAllSeller);
+router
+  .route("/getAllSeller")
+  .post(admin, handleGetAllSeller)
+  .get(admin, handlegetAll);
 
 // Get Specific Post -->
 router.route("/getProduct/:id").get(admin, handleGetSpecificProduct);

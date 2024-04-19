@@ -90,6 +90,21 @@ const handleGetAllSeller = async (req, res) => {
   }
 };
 
+const handlegetAll = async (req, res) => {
+  try {
+    const sellers = await Seller.find({});
+    if (sellers.length < 1) {
+      return res.status(404).json({ message: "No seller found" });
+    }
+    return res
+      .status(200)
+      .json({ message: "All sellers fetched successfully", sellers });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "err " + error });
+  }
+};
+
 // Get Specific product -->
 const handleGetSpecificProduct = async (req, res) => {
   const id = req.params.id;
@@ -111,4 +126,5 @@ module.exports = {
   handleGetAllUsers,
   handleGetAllSeller,
   handleGetSpecificProduct,
+  handlegetAll,
 };

@@ -11,6 +11,7 @@ const {
   handleGetBrandById,
   handleGetAllProducts,
   handleBanners,
+  handleThumbnail,
 } = require("../controllers/user.controllers");
 
 const router = express.Router();
@@ -28,6 +29,7 @@ router.route("/boutique/:id").get(auth, handleGetBrandById);
 // Product -->
 router.route("/products").post(auth, handleGetAllProducts);
 router.route("/banners").get(auth, handleBanners);
+router.route("/thumbnails").post(upload.single("image"), auth, handleThumbnail);
 
 // Error handling middleware -->
 router.use((err, req, res, next) => {

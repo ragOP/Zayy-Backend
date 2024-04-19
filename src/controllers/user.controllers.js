@@ -1,6 +1,7 @@
 const Banner = require("../models/banner.models");
 const Product = require("../models/products.model");
 const Seller = require("../models/seller.models");
+const Thumbnail = require("../models/thumbnail.models");
 const cloudinary = require("../utils/cloudniary.utils");
 const fs = require("fs");
 
@@ -226,32 +227,6 @@ exports.handleGetAllProducts = async (req, res) => {
   }
 };
 
-// exports.handleBanners = async (req, res) => {
-//   try {
-//     const { name, brandId } = req.body;
-
-//     let logoUrl = "";
-//     if (req.file) {
-//       const logoUrlResponse = await cloudinary.uploader.upload(req.file.path);
-//       logoUrl = logoUrlResponse.secure_url;
-//       fs.unlinkSync(req.file.path);
-//     }
-
-//     const newBanner = new Banner({
-//       name: name,
-//       brandId: brandId,
-//       image: logoUrl,
-//     });
-//     const savedBanner = await newBanner.save();
-//     res
-//       .status(201)
-//       .json({ message: "Banner created successfully", banner: savedBanner });
-//   } catch (error) {
-//     console.error("Error:", error);
-//     res.status(500).json({ message: "Internal server error." });
-//   }
-// };
-
 exports.handleBanners = async (req, res) => {
   try {
     const data = await Banner.find({});
@@ -259,6 +234,33 @@ exports.handleBanners = async (req, res) => {
       return res.status(404).json({ message: "No banners found." });
     }
     res.status(200).json({ message: "Fetched Successfully", data: data });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+};
+
+exports.handleThumbnail = async (req, res) => {
+  try {
+    const { name, brandId, type } = req.body;
+
+    let logoUrl = "";
+    if (req.file) {
+      const logoUrlResponse = await cloudinary.uploader.upload(req.file.path);
+      logoUrl = logoUrlResponse.secure_url;
+      fs.unlinkSync(req.file.path);
+    }
+
+    const newThumbnail = new Thumbnail({
+      name: name,
+      brandId: brandId,
+      type: type,
+      image: logoUrl,
+    });
+    const savedThumbnail = await newThumbnail.save();
+    res
+      .status(201)
+      .json({ message: "Banner created successfully", banner: savedThumbnail });
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ message: "Internal server error." });
