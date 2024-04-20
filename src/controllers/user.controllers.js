@@ -1,4 +1,5 @@
 const Banner = require("../models/banner.models");
+const Category = require("../models/categories.models");
 const Product = require("../models/products.model");
 const Seller = require("../models/seller.models");
 const Thumbnail = require("../models/thumbnail.models");
@@ -274,6 +275,27 @@ exports.handleThumbnail = async (req, res) => {
       return res.status(404).json({ message: "No banners found." });
     }
     res.status(200).json({ message: "Fetched Successfully", data: data });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+};
+
+exports.handleGetCategories = async (req, res) => {
+  try {
+    const { name, sub_categories } = req.body;
+    let logoUrl = "";
+    if (req.file) {
+      const logoUrlResponse = await cloudinary.uploader.upload(req.file.path);
+      logoUrl = logoUrlResponse.secure_url;
+      fs.unlinkSync(req.file.path);
+    }
+    const data = await Category.create({
+      name,
+      image: logoUrl,
+      sub_categories: sub_categories || [],
+    });
+    return res.send({ message: "Category Created Sucessfully", data });
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ message: "Internal server error." });
