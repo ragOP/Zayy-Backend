@@ -3,8 +3,8 @@ const Category = require("../models/categories.models");
 const Product = require("../models/products.model");
 const Seller = require("../models/seller.models");
 const Thumbnail = require("../models/thumbnail.models");
-const cloudinary = require("../utils/cloudniary.utils");
-const fs = require("fs");
+// const cloudinary = require("../utils/cloudniary.utils");
+// const fs = require("fs");
 
 // Get All Brand Products based on category filter
 exports.handleGetAllBrand = async (req, res) => {
@@ -241,33 +241,6 @@ exports.handleBanners = async (req, res) => {
   }
 };
 
-// exports.handleThumbnail = async (req, res) => {
-//   try {
-//     const { name, brandId, type } = req.body;
-
-//     let logoUrl = "";
-//     if (req.file) {
-//       const logoUrlResponse = await cloudinary.uploader.upload(req.file.path);
-//       logoUrl = logoUrlResponse.secure_url;
-//       fs.unlinkSync(req.file.path);
-//     }
-
-//     const newThumbnail = new Thumbnail({
-//       name: name,
-//       brandId: brandId,
-//       type: type,
-//       image: logoUrl,
-//     });
-//     const savedThumbnail = await newThumbnail.save();
-//     res
-//       .status(201)
-//       .json({ message: "Banner created successfully", banner: savedThumbnail });
-//   } catch (error) {
-//     console.error("Error:", error);
-//     res.status(500).json({ message: "Internal server error." });
-//   }
-// };
-
 exports.handleThumbnail = async (req, res) => {
   try {
     const data = await Thumbnail.find({});
@@ -283,19 +256,11 @@ exports.handleThumbnail = async (req, res) => {
 
 exports.handleGetCategories = async (req, res) => {
   try {
-    const { name, sub_categories } = req.body;
-    let logoUrl = "";
-    if (req.file) {
-      const logoUrlResponse = await cloudinary.uploader.upload(req.file.path);
-      logoUrl = logoUrlResponse.secure_url;
-      fs.unlinkSync(req.file.path);
+    const data = await Category.find({});
+    if (!data) {
+      return res.send({ message: "No category found", data });
     }
-    const data = await Category.create({
-      name,
-      image: logoUrl,
-      sub_categories: sub_categories || [],
-    });
-    return res.send({ message: "Category Created Sucessfully", data });
+    return res.send({ message: "All category fetched sucessfully", data });
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ message: "Internal server error." });
