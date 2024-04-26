@@ -1,8 +1,8 @@
 const express = require("express");
-// const multer = require("multer");
-// const { storage } = require("../utils/multer.utils");
+const multer = require("multer");
+const { storage } = require("../utils/multer.utils");
 const { auth } = require("../middlewares/protectedRoutes.middlewares");
-// const upload = multer({ storage: storage });
+const upload = multer({ storage: storage });
 const {
   handleGetAllBrand,
   handleGetAllBoutique,
@@ -14,6 +14,7 @@ const {
   handleThumbnail,
   handleGetCategories,
   handleGetParticularProduct,
+  handlePostReview,
 } = require("../controllers/user.controllers");
 
 const router = express.Router();
@@ -34,6 +35,9 @@ router.route("/banners").get(auth, handleBanners);
 router.route("/thumbnails").get(auth, handleThumbnail);
 router.route("/lists").get(auth, handleGetCategories);
 router.route("/product/:id").get(auth, handleGetParticularProduct);
+router
+  .route("/reviews/:id")
+  .post(upload.single("image"), auth, handlePostReview);
 
 // Error handling middleware -->
 router.use((err, req, res, next) => {

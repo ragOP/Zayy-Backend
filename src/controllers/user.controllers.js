@@ -1,10 +1,11 @@
 const Banner = require("../models/banner.models");
 const Category = require("../models/categories.models");
 const Product = require("../models/products.model");
+const Review = require("../models/reviews.models");
 const Seller = require("../models/seller.models");
 const Thumbnail = require("../models/thumbnail.models");
-// const cloudinary = require("../utils/cloudniary.utils");
-// const fs = require("fs");
+const cloudinary = require("../utils/cloudniary.utils");
+const fs = require("fs");
 
 // Get All Brand Products based on category filter
 exports.handleGetAllBrand = async (req, res) => {
@@ -275,6 +276,29 @@ exports.handleGetParticularProduct = async (req, res) => {
       return res.send({ message: "No category found", data });
     }
     return res.send({ message: "product fetched sucessfully", data });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+};
+
+exports.handlePostReview = async (req, res) => {
+  const id = req.params.id;
+  const { review, rating } = req.body;
+  let imgUrl = "";
+  if (req.file) {
+    const logoUrlResponse = await cloudinary.uploader.upload(req.file.path);
+    imgUrl = logoUrlResponse.secure_url;
+    fs.unlinkSync(req.file.path);
+  }
+  try {
+    await Review.create({
+      postId: id,
+      review,
+      rating,
+      image: imgUrl,
+    });
+    return res.status(201).json({ message: "Review added sucessfully" });
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ message: "Internal server error." });
