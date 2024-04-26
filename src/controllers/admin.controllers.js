@@ -81,7 +81,7 @@ const handleGetAllUsers = async (req, res) => {
 const handleGetAllSeller = async (req, res) => {
   const { business_type } = req.body;
   try {
-    const sellers = await Seller.find({ business_type });
+    const sellers = await Seller.find({ business_type }).select("-password");
     if (sellers.length < 1) {
       return res.status(404).json({ message: "No seller found" });
     }

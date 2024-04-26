@@ -14,7 +14,9 @@ exports.handleGetAllBrand = async (req, res) => {
       let filter = {
         category: { $regex: req.query.category, $options: "i" },
       };
-      const brands = await Seller.find({ business_type: "brand" });
+      const brands = await Seller.find({ business_type: "brand" }).select(
+        "-password"
+      );
 
       if (brands.length === 0) {
         return res.status(200).json({
@@ -27,7 +29,9 @@ exports.handleGetAllBrand = async (req, res) => {
         data: brands,
       });
     } else {
-      const brands = await Seller.find({ business_type: "brand" });
+      const brands = await Seller.find({ business_type: "brand" }).select(
+        "-password"
+      );
       if (brands.length === 0) {
         return res.status(200).json({
           message: "No Result Found!",
@@ -83,7 +87,9 @@ exports.handleGetAllBoutique = async (req, res) => {
       let filter = {
         category: { $regex: req.query.category, $options: "i" },
       };
-      const brands = await Seller.find({ business_type: "boutique" });
+      const brands = await Seller.find({ business_type: "boutique" }).select(
+        "-password"
+      );
       if (brands.length === 0) {
         return res.status(200).json({
           message: "No Result Found!",
@@ -95,7 +101,9 @@ exports.handleGetAllBoutique = async (req, res) => {
         data: brands,
       });
     } else {
-      const brands = await Seller.find({ business_type: "boutique" });
+      const brands = await Seller.find({ business_type: "boutique" }).select(
+        "-password"
+      );
       if (brands.length === 0) {
         return res.status(200).json({
           message: "No Result Found!",
@@ -150,7 +158,7 @@ exports.handleGetAllBoutiqueNames = async (req, res) => {
 exports.handleGetBrandById = async (req, res) => {
   try {
     const id = req.params.id;
-    const data = await Seller.findById(id);
+    const data = await Seller.findById(id).select("-password");
     if (!data) {
       return res.status(200).json({
         message: "No Matching Result Found!",
