@@ -53,6 +53,16 @@ const productSchema = new mongoose.Schema(
       type: String,
       default: "pending",
     },
+    color: [
+      {
+        type: String,
+      },
+    ],
+    size: [
+      {
+        type: String,
+      },
+    ],
   },
   { timestamps: true }
 );
