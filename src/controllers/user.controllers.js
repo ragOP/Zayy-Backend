@@ -283,8 +283,7 @@ exports.handleGetParticularProduct = async (req, res) => {
 };
 
 exports.handlePostReview = async (req, res) => {
-  const id = req.params.id;
-  const { review, rating } = req.body;
+  const { review, rating, postId } = req.body;
   let imgUrl = "";
   if (req.file) {
     const logoUrlResponse = await cloudinary.uploader.upload(req.file.path);
@@ -293,7 +292,7 @@ exports.handlePostReview = async (req, res) => {
   }
   try {
     await Review.create({
-      postId: id,
+      postId,
       review,
       rating,
       image: imgUrl,

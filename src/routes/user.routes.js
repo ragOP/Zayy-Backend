@@ -36,7 +36,7 @@ router.route("/thumbnails").get(auth, handleThumbnail);
 router.route("/lists").get(auth, handleGetCategories);
 router.route("/product/:id").get(auth, handleGetParticularProduct);
 router
-  .route("/reviews/:id")
+  .route("/rateProduct")
   .post(upload.single("image"), auth, handlePostReview);
 
 // Error handling middleware -->
