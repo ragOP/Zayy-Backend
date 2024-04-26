@@ -266,3 +266,17 @@ exports.handleGetCategories = async (req, res) => {
     res.status(500).json({ message: "Internal server error." });
   }
 };
+
+exports.handleGetParticularProduct = async (req, res) => {
+  const id = req.params.id;
+  try {
+    const data = await Product.findById(id);
+    if (!data) {
+      return res.send({ message: "No category found", data });
+    }
+    return res.send({ message: "product fetched sucessfully", data });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+};
