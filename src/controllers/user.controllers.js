@@ -280,10 +280,12 @@ exports.handleGetParticularProduct = async (req, res) => {
   const id = req.params.id;
   try {
     const data = await Product.findById(id);
+    const sellerId = data.createdBy;
     if (!data) {
       return res.send({ message: "No category found", data });
     }
-    return res.send({ message: "product fetched sucessfully", data });
+    const seller = await Seller.findById(sellerId).select("-password");
+    return res.send({ message: "product fetched sucessfully", data, seller });
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ message: "Internal server error." });
