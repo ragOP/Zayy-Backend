@@ -1,4 +1,5 @@
 const Banner = require("../models/banner.models");
+const Cart = require("../models/cart.models");
 const Category = require("../models/categories.models");
 const Product = require("../models/products.model");
 const Review = require("../models/reviews.models");
@@ -312,4 +313,23 @@ exports.handlePostReview = async (req, res) => {
     console.error("Error:", error);
     res.status(500).json({ message: "Internal server error." });
   }
+};
+
+exports.handleAddToCart = async (req, res) => {
+  const { productId, quantity, colorname, size } = req.body;
+  const { _id } = req.user;
+  try {
+    await Cart.create({
+      productId,
+      quantity,
+      colorname,
+      size,
+      userId: _id,
+    });
+    return res.status(201).json({ message: "Added to cart sucessfully" });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+  console.log(req.user);
 };
