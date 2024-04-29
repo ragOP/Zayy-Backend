@@ -5,6 +5,7 @@ const Product = require("../models/products.model");
 const Review = require("../models/reviews.models");
 const Seller = require("../models/seller.models");
 const Thumbnail = require("../models/thumbnail.models");
+const Wishlist = require("../models/wishlist.models");
 const cloudinary = require("../utils/cloudniary.utils");
 const fs = require("fs");
 
@@ -327,6 +328,24 @@ exports.handleAddToCart = async (req, res) => {
       userId: _id,
     });
     return res.status(201).json({ message: "Added to cart sucessfully" });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+  console.log(req.user);
+};
+
+exports.handleAddToWishlist = async (req, res) => {
+  const { productId, colorname, size } = req.body;
+  const { _id } = req.user;
+  try {
+    await Wishlist.create({
+      productId,
+      colorname,
+      size,
+      userId: _id,
+    });
+    return res.status(201).json({ message: "Added to wishlist sucessfully" });
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ message: "Internal server error." });
