@@ -320,6 +320,10 @@ exports.handleAddToCart = async (req, res) => {
   const { productId, quantity, colorname, size } = req.body;
   const { _id } = req.user;
   try {
+    const response = await Cart.find({ productId, _id });
+    if (response) {
+      return res.status(409).json({ message: "Already exist in cart" });
+    }
     await Cart.create({
       productId,
       quantity,
@@ -339,6 +343,10 @@ exports.handleAddToWishlist = async (req, res) => {
   const { productId, colorname, size } = req.body;
   const { _id } = req.user;
   try {
+    const response = await Wishlist.find({ productId, _id });
+    if (response) {
+      return res.status(409).json({ message: "Already in wislist" });
+    }
     await Wishlist.create({
       productId,
       colorname,
