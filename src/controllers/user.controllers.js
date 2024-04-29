@@ -319,9 +319,10 @@ exports.handlePostReview = async (req, res) => {
 exports.handleAddToCart = async (req, res) => {
   const { productId, quantity, colorname, size } = req.body;
   const { _id } = req.user;
+  const userId = _id;
   try {
-    const response = await Cart.find({ productId, _id });
-    if (response) {
+    const response = await Cart.find({ productId, userId });
+    if (response.length > 0) {
       return res.status(409).json({ message: "Already exist in cart" });
     }
     await Cart.create({
@@ -336,15 +337,15 @@ exports.handleAddToCart = async (req, res) => {
     console.error("Error:", error);
     res.status(500).json({ message: "Internal server error." });
   }
-  console.log(req.user);
 };
 
 exports.handleAddToWishlist = async (req, res) => {
   const { productId, colorname, size } = req.body;
   const { _id } = req.user;
+  const userId = _id;
   try {
-    const response = await Wishlist.find({ productId, _id });
-    if (response) {
+    const response = await Wishlist.find({ productId, userId });
+    if (response.length > 0) {
       return res.status(409).json({ message: "Already in wislist" });
     }
     await Wishlist.create({
@@ -359,4 +360,67 @@ exports.handleAddToWishlist = async (req, res) => {
     res.status(500).json({ message: "Internal server error." });
   }
   console.log(req.user);
+};
+
+exports.handleGetCart = async (req, res) => {
+  const { _id } = req.user;
+  try {
+    const cartItems = await Cart.find({ userId: _id });
+
+    const productIds = cartItems.map((item) => item.productId);
+
+    const products = await Product.find({ _id: { $in: productIds } });
+
+    const cartItemMap = new Map();
+    cartItems.forEach((item) => {
+      cartItemMap.set(item.productId.toString(), item);
+    });
+
+    const productsWithCartInfo = products.map((product) => {
+      const productId = product._id.toString();
+      if (cartItemMap.has(productId)) {
+        const cartItem = cartItemMap.get(productId);
+        product.instock = cartItem.quantity;
+        product.color = cartItem.colorname;
+        product.size = cartItem.size;
+      }
+      return product;
+    });
+
+    return res.status(200).json({ products: productsWithCartInfo });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+};
+
+exports.handleGetWishlist = async (req, res) => {
+  const { _id } = req.user;
+  try {
+    const wishlistItems = await Wishlist.find({ userId: _id });
+
+    const productIds = wishlistItems.map((item) => item.productId);
+
+    const products = await Product.find({ _id: { $in: productIds } });
+
+    const wishlistItemMap = new Map();
+    wishlistItems.forEach((item) => {
+      wishlistItemMap.set(item.productId.toString(), item);
+    });
+
+    const productsWithWishlistInfo = products.map((product) => {
+      const productId = product._id.toString();
+      if (wishlistItemMap.has(productId)) {
+        const wishlistItem = wishlistItemMap.get(productId);
+        product.color = wishlistItem.colorname;
+        product.size = wishlistItem.size;
+      }
+      return product;
+    });
+
+    return res.status(200).json({ products: productsWithWishlistInfo });
+  } catch (error) {
+    console.error("Error:", error);
+    return res.status(500).json({ message: "Internal server error." });
+  }
 };

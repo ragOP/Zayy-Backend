@@ -17,6 +17,8 @@ const {
   handlePostReview,
   handleAddToCart,
   handleAddToWishlist,
+  handleGetCart,
+  handleGetWishlist,
 } = require("../controllers/user.controllers");
 
 const router = express.Router();
@@ -41,8 +43,11 @@ router
   .route("/rateProduct")
   .post(upload.single("image"), auth, handlePostReview);
 
-router.route("/cart").post(auth, handleAddToCart);
-router.route("/wishlist").post(auth, handleAddToWishlist);
+router.route("/cart").post(auth, handleAddToCart).get(auth, handleGetCart);
+router
+  .route("/wishlist")
+  .post(auth, handleAddToWishlist)
+  .get(auth, handleGetWishlist);
 
 // Error handling middleware -->
 router.use((err, req, res, next) => {
