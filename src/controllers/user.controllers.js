@@ -424,3 +424,31 @@ exports.handleGetWishlist = async (req, res) => {
     return res.status(500).json({ message: "Internal server error." });
   }
 };
+
+exports.handleRemoveCartItem = async (req, res) => {
+  const { productId } = req.body;
+  try {
+    const cartItem = await Cart.findOneAndDelete({ productId });
+    if (cartItem.lenth == 0) {
+      return res.status(404).json({ message: "No Data Found" });
+    }
+    return res.status(200).json({ message: "Product removed from cart" });
+  } catch (error) {
+    console.error("Error:", error);
+    return res.status(500).json({ message: "Internal server error." });
+  }
+};
+
+exports.handleRemoveWishlistItem = async (req, res) => {
+  const { productId } = req.body;
+  try {
+    const cartItem = await Wishlist.findOneAndDelete({ productId });
+    if (cartItem.lenth == 0) {
+      return res.status(404).json({ message: "No Data Found" });
+    }
+    return res.status(200).json({ message: "Product removed from wishlist" });
+  } catch (error) {
+    console.error("Error:", error);
+    return res.status(500).json({ message: "Internal server error." });
+  }
+};
