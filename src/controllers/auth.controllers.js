@@ -47,7 +47,7 @@ const handleUserLogin = async (req, res) => {
       return res.status(400).json({ message: "Invalid OTP" });
     }
     let user = await User.findOne({ number });
-    if (!user) {
+    if (user === null) {
       user = await User.create({ number });
       const token = jwt.sign(
         { id: user._id, role: "user" },
