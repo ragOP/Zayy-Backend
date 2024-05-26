@@ -18,6 +18,8 @@ const handlecreateProduct = async (req, res) => {
       instock,
       category,
       type,
+      color,
+      size,
     } = req.body;
 
     const imageUrls = [];
@@ -41,6 +43,8 @@ const handlecreateProduct = async (req, res) => {
       type,
       images: imageUrls,
       description,
+      color,
+      size,
       createdBy: id,
       status: "pending",
     });
