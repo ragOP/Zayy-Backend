@@ -21,6 +21,7 @@ const {
   handleGetWishlist,
   handleRemoveCartItem,
   handleRemoveWishlistItem,
+  updateCart,
 } = require("../controllers/user.controllers");
 
 const router = express.Router();
@@ -47,6 +48,7 @@ router
 
 // Cart and Wishlist -->
 router.route("/cart").post(auth, handleAddToCart).get(auth, handleGetCart);
+router.route("/updatecart").post(auth, updateCart);
 router
   .route("/wishlist")
   .post(auth, handleAddToWishlist)

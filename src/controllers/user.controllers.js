@@ -339,6 +339,52 @@ exports.handleAddToCart = async (req, res) => {
   }
 };
 
+exports.updateCart = async (req, res) => {
+  const { _id } = req.user;
+  const { productId, quantity } = req.body;
+
+  if (!productId || quantity == null) {
+    return res
+      .status(400)
+      .json({ message: "Product ID and quantity are required." });
+  }
+
+  try {
+    const cartItem = await Cart.findOne({ userId: _id, productId });
+    if (!cartItem) {
+      return res.status(404).json({ message: "Cart item not found." });
+    }
+    cartItem.quantity = quantity;
+    await cartItem.save();
+    const cartItems = await Cart.find({ userId: _id });
+    const productIds = cartItems.map((item) => item.productId);
+    const products = await Product.find({ _id: { $in: productIds } });
+    const cartItemMap = new Map(
+      cartItems.map((item) => [item.productId.toString(), item])
+    );
+    const productsWithCartInfo = products.map((product) => {
+      const productId = product._id.toString();
+      if (cartItemMap.has(productId)) {
+        const cartItem = cartItemMap.get(productId);
+        return {
+          ...product.toObject(),
+          quantity: cartItem.quantity,
+          color: cartItem.colorname,
+          size: cartItem.size,
+        };
+      }
+      return product;
+    });
+    return res.status(200).json({
+      message: "Cart quantity updated successfully.",
+      products: productsWithCartInfo,
+    });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+};
+
 exports.handleAddToWishlist = async (req, res) => {
   const { productId, colorname, size } = req.body;
   const { _id } = req.user;
