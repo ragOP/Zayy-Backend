@@ -375,18 +375,20 @@ exports.handleGetCart = async (req, res) => {
     cartItems.forEach((item) => {
       cartItemMap.set(item.productId.toString(), item);
     });
-
     const productsWithCartInfo = products.map((product) => {
       const productId = product._id.toString();
       if (cartItemMap.has(productId)) {
         const cartItem = cartItemMap.get(productId);
-        product.instock = cartItem.quantity;
-        product.color = cartItem.colorname;
-        product.size = cartItem.size;
+        return {
+          ...product.toObject(),
+          quantity: cartItem.quantity,
+          color: cartItem.colorname,
+          size: cartItem.size,
+        };
       }
       return product;
     });
-
+    console.log(productsWithCartInfo);
     return res.status(200).json({ products: productsWithCartInfo });
   } catch (error) {
     console.error("Error:", error);
