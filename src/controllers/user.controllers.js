@@ -5,6 +5,7 @@ const Product = require("../models/products.model");
 const Review = require("../models/reviews.models");
 const Seller = require("../models/seller.models");
 const Thumbnail = require("../models/thumbnail.models");
+const User = require("../models/users.models");
 const Wishlist = require("../models/wishlist.models");
 const cloudinary = require("../utils/cloudniary.utils");
 const fs = require("fs");
@@ -500,3 +501,17 @@ exports.handleRemoveWishlistItem = async (req, res) => {
     return res.status(500).json({ message: "Internal server error." });
   }
 };
+
+exports.handleGetProfile = async(req, res) => {
+  const {_id} = req.user;
+  try {
+    const user = await User.findById({_id});
+    if(user == null) {
+      return res.status(404).json({message: "No User Found"})
+    }
+    return res.status(200).json({user, message: "User Found Sucessfully"})
+  } catch (error) {
+    console.error("Error:", error);
+    return res.status(500).json({ message: "Internal server error." });
+  }
+}

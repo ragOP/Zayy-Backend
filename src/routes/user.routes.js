@@ -22,9 +22,14 @@ const {
   handleRemoveCartItem,
   handleRemoveWishlistItem,
   updateCart,
+  handleGetProfile,
 } = require("../controllers/user.controllers");
 
 const router = express.Router();
+
+// Profile --> 
+
+router.route("/").get(auth, handleGetProfile);
 
 // Brands -->
 router.route("/brands").get(auth, handleGetAllBrand);
