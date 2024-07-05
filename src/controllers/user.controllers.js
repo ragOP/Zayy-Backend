@@ -7,6 +7,7 @@ const Seller = require("../models/seller.models");
 const Thumbnail = require("../models/thumbnail.models");
 const User = require("../models/users.models");
 const Wishlist = require("../models/wishlist.models");
+const Orders = require("../models/order.models");
 const cloudinary = require("../utils/cloudniary.utils");
 const fs = require("fs");
 
@@ -513,5 +514,36 @@ exports.handleGetProfile = async(req, res) => {
   } catch (error) {
     console.error("Error:", error);
     return res.status(500).json({ message: "Internal server error." });
+  }
+}
+
+exports.handlePlaceOrder = async (req, res) => {
+  const { _id } = req.user;
+  const {
+    products,
+    address,
+    amount,
+    is_cod,
+    discount,
+    coupon,
+    orderId,
+    paymentId
+  } = req.body;
+  try {
+    await Orders.create({
+      user: _id,
+      products,
+      address,
+      amount,
+      is_cod,
+      discount,
+      coupon,
+      orderId,
+      paymentId
+    });
+    return res.status(201).json({ message: "Order Placed Sucessfully" });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ message: "Internal server error." });
   }
 }

@@ -5,7 +5,9 @@ const orderSchema = new Schema({
   products: [
     {
       productId: { 
-       type: mongoose.Schema.Types.ObjectId, required: true
+       type: mongoose.Schema.Types.ObjectId, 
+       ref: "Product",
+       required: true
       },
       quantity: {
         type: Number, required: true 
@@ -43,6 +45,11 @@ const orderSchema = new Schema({
     type: {
       type: String, required: true 
     },
+  },
+  user: { 
+   type: mongoose.Schema.Types.ObjectId,
+   ref: "User",
+   required: true
   },
   amount: {
     type: Number, required: true 
