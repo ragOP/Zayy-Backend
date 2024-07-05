@@ -12,7 +12,7 @@ const fs = require("fs");
 
 // Get All Brand Products based on category filter
 exports.handleGetAllBrand = async (req, res) => {
-  try {
+  try { 
     if (req.query.category) {
       let filter = {
         category: { $regex: req.query.category, $options: "i" },

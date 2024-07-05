@@ -23,6 +23,7 @@ const {
   handleRemoveWishlistItem,
   updateCart,
   handleGetProfile,
+  handlePlaceOrder
 } = require("../controllers/user.controllers");
 
 const router = express.Router();
@@ -61,6 +62,10 @@ router
 
 router.route("/cart/remove").post(auth, handleRemoveCartItem);
 router.route("/wishlist/remove").post(auth, handleRemoveWishlistItem);
+
+// Place Order Api -->
+
+router.route("/placeOrder").post(auth, handlePlaceOrder);
 
 // Error handling middleware -->
 router.use((err, req, res, next) => {
