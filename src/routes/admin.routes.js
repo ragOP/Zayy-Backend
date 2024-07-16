@@ -11,6 +11,7 @@ const {
   handlePostBanners,
   handlePostThumbnail,
   handlegetAll,
+  handleGetAllOrders
 } = require("../controllers/admin.controllers");
 const { admin } = require("../middlewares/protectedRoutes.middlewares");
 
@@ -42,6 +43,8 @@ router.route("/banners").post(upload.single("image"), admin, handlePostBanners);
 router
   .route("/thumbnails")
   .post(upload.single("image"), admin, handlePostThumbnail);
+
+router.route("/getAllOrders").get(admin, handleGetAllOrders);
 
 // Error handling middleware -->
 router.use((err, req, res, next) => {

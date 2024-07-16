@@ -1,4 +1,5 @@
 const Banner = require("../models/banner.models");
+const Order = require("../models/order.models");
 const Product = require("../models/products.model");
 const Seller = require("../models/seller.models");
 const Thumbnail = require("../models/thumbnail.models");
@@ -176,6 +177,19 @@ const handlePostBanners = async (req, res) => {
   }
 };
 
+const handleGetAllOrders = async (req, res) => {
+  try {
+    const orders =  await Order.find({});
+    if(orders.length > 1){
+      return res.status(404).json({message: "No Orders Found"});
+    }
+    return res.status(200).json({orders, message: "All Ordes Fetched Successfully!"})
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+}
+
 module.exports = {
   handleGetAllProducts,
   handleGetAllPendingProducts,
@@ -186,4 +200,5 @@ module.exports = {
   handlegetAll,
   handlePostBanners,
   handlePostThumbnail,
+  handleGetAllOrders
 };
