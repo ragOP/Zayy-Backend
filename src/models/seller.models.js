@@ -53,6 +53,12 @@ const sellerSchema = new mongoose.Schema({
   business_type: {
     type: String,
   },
+  upi:{
+    type: String,
+  },
+  description:{
+    type: String,
+  }
 });
 
 const Seller = mongoose.model("Seller", sellerSchema);

@@ -122,6 +122,8 @@ const handleSellerRegister = async (req, res) => {
       branch_name,
       account_holder_name,
       business_type,
+      description,
+      upi
     } = req.body;
     const exisitingSeller = await Seller.findOne({ email });
     if (exisitingSeller) {
@@ -154,6 +156,8 @@ const handleSellerRegister = async (req, res) => {
       branch_name,
       account_holder_name,
       business_type,
+      description,
+      upi
     });
     const token = jwt.sign(
       { id: seller._id, role: "seller" },
