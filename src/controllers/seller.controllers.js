@@ -56,17 +56,6 @@ const handlecreateProduct = async (req, res) => {
   }
 };
 
-const handleGetProducts = async (req, res) => {
-  try {
-    const id = req.user.id;
-    const products = await Product.find({ createdBy: id });
-    res.status(200).json(products);
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: "err " + error });
-  }
-};
-
 const handlePostCollection = async (req, res) => {
   const { name } = req.body;
   const { id } = req.user;
@@ -109,9 +98,38 @@ const handleGetCollection = async (req, res) => {
   }
 }
 
+const handleGetAllApprovedProduct = async (req, res) => {
+  const {id} = req.user;
+  try {
+    const data = await Product.find({createdBy: id, status: "approved"});
+    if(data.length < 1){
+      return res.status(404).json({message: "No Data Found"});
+    }
+    return res.status(200).json({message: "Product Fetched Sucessfully", data});
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "err " + error });
+  }
+}
+
+const handleGetAllUnapprovedProduct = async (req, res) => {
+  const {id} = req.user;
+  try {
+    const data = await Product.find({createdBy: id, status: "pending"});
+    if(data.length < 1){
+      return res.status(404).json({message: "No Data Found"});
+    }
+    return res.status(200).json({message: "Product Fetched Sucessfully", data});
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "err " + error });
+  }
+}
+
 module.exports = {
   handlecreateProduct,
-  handleGetProducts,
   handlePostCollection,
-  handleGetCollection
+  handleGetCollection,
+  handleGetAllApprovedProduct,
+  handleGetAllUnapprovedProduct
 };

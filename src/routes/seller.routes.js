@@ -3,9 +3,10 @@ const multer = require("multer");
 const { storage } = require("../utils/multer.utils");
 const {
   handlecreateProduct,
-  handleGetProducts,
   handlePostCollection,
   handleGetCollection,
+  handleGetAllUnapprovedProduct,
+  handleGetAllApprovedProduct,
 } = require("../controllers/seller.controllers");
 const { seller } = require("../middlewares/protectedRoutes.middlewares");
 
@@ -17,9 +18,11 @@ router
   .route("/addProduct")
   .post(seller, upload.array("images", 5), handlecreateProduct);
 
-router.route("/getAllProducts").get(seller, handleGetProducts);
+router.route("/getAllProducts").get(seller, handleGetAllApprovedProduct);
 
 router.route("/collection").post(seller, upload.single("image"), handlePostCollection).get(seller, handleGetCollection)
+
+router.route("/getAllPendingProduct").get(seller, handleGetAllUnapprovedProduct);
 
 // Error handling middleware -->
 router.use((err, req, res, next) => {

@@ -199,6 +199,7 @@ exports.handleGetAllProducts = async (req, res) => {
         sellerfilter.business_type = "boutique";
       }
     }
+    filters.status = "approved";
     if (req.body.boutique && req.body.boutique.length > 0) {
       filters.boutique = Array.isArray(req.body.boutique)
         ? { $in: req.body.boutique }
