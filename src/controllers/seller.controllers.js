@@ -1,3 +1,4 @@
+const Collection = require("../models/collections.models");
 const Product = require("../models/products.model");
 const cloudinary = require("../utils/cloudniary.utils");
 const fs = require("fs");
@@ -66,7 +67,36 @@ const handleGetProducts = async (req, res) => {
   }
 };
 
+const handlePostCollection = async (req, res) => {
+  const { name } = req.body;
+  const { id } = req.user;
+
+  let logoUrl = "";
+  if (req.file) {
+    const logoUrlResponse = await cloudinary.uploader.upload(req.file.path);
+    logoUrl = logoUrlResponse.secure_url;
+    fs.unlinkSync(req.file.path);
+  }
+
+  try {
+    const collection = await Collection.find({name: name});
+    if(collection.length > 1){
+      return res.status(409).json({message: "Name Already Exist"});
+    }
+    collection = await Collection.create({
+      name,
+      sellerId: id,
+      image: logoUrl
+    })
+    return res.status(201).json({message: "Collection Created Sucessfully"});
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "err " + error });
+  }
+}
+
 module.exports = {
   handlecreateProduct,
   handleGetProducts,
+  handlePostCollection,
 };
