@@ -79,7 +79,7 @@ const handlePostCollection = async (req, res) => {
   }
 
   try {
-    const collection = await Collection.find({name: name});
+    let collection = await Collection.find({name: name});
     if(collection.length > 1){
       return res.status(409).json({message: "Name Already Exist"});
     }
@@ -95,8 +95,23 @@ const handlePostCollection = async (req, res) => {
   }
 }
 
+const handleGetCollection = async (req, res) => {
+  const { id } = req.user;
+  try {
+    const collection = await Collection.find({sellerId: id});
+    if(collection.length < 1){
+      return res.status(404).json({message: "No Collection Found"});
+    }
+    return res.status(200).json({collection, message: "Collection Fetched Succesfully"})
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "err " + error });
+  }
+}
+
 module.exports = {
   handlecreateProduct,
   handleGetProducts,
   handlePostCollection,
+  handleGetCollection
 };

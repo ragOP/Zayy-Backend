@@ -10,6 +10,7 @@ const Wishlist = require("../models/wishlist.models");
 const Orders = require("../models/order.models");
 const cloudinary = require("../utils/cloudniary.utils");
 const fs = require("fs");
+const Collection = require("../models/collections.models");
 
 // Get All Brand Products based on category filter
 exports.handleGetAllBrand = async (req, res) => {
@@ -542,6 +543,20 @@ exports.handlePlaceOrder = async (req, res) => {
       paymentId
     });
     return res.status(201).json({ message: "Order Placed Sucessfully" });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+}
+
+exports.handleGetBrandCollection = async (req, res) => {
+  const id = req.params.id;
+  try {
+    const data = await Collection.find({sellerId: id});
+    if(data.length < 1){
+      return res.status(404).json({message: "No Collection Found"});
+    }
+    return res.status(200).json({data, message: "Collection Fetched"});
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ message: "Internal server error." });
