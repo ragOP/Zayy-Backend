@@ -7,6 +7,7 @@ const {
   handleGetCollection,
   handleGetAllUnapprovedProduct,
   handleGetAllApprovedProduct,
+  handleAddToCollection
 } = require("../controllers/seller.controllers");
 const { seller } = require("../middlewares/protectedRoutes.middlewares");
 
@@ -23,6 +24,8 @@ router.route("/getAllProducts").get(seller, handleGetAllApprovedProduct);
 router.route("/collection").post(seller, upload.single("image"), handlePostCollection).get(seller, handleGetCollection)
 
 router.route("/getAllPendingProduct").get(seller, handleGetAllUnapprovedProduct);
+
+router.route("/addToColllection").post(seller, handleAddToCollection)
 
 // Error handling middleware -->
 router.use((err, req, res, next) => {

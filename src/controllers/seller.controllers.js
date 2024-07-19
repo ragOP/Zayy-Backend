@@ -126,10 +126,33 @@ const handleGetAllUnapprovedProduct = async (req, res) => {
   }
 }
 
+const handleAddToCollection = async (req, res) => {
+  const {name, product} = req.body;
+  try {
+    const products = await Product.find({_id: {$in: product}});
+    if (products.length === 0) {
+      return res.status(404).json({ message: 'No products found matching the provided IDs' });
+    }
+
+    for(const product of products){
+      await Product.findByIdAndUpdate(
+        product._id,
+        {$addToSet: {collectionArray: name}},
+        {new: true}
+      )
+    }
+    res.status(200).json({ message: 'Collection updated successfully' });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "err " + error });
+  }
+}
+
 module.exports = {
   handlecreateProduct,
   handlePostCollection,
   handleGetCollection,
   handleGetAllApprovedProduct,
-  handleGetAllUnapprovedProduct
+  handleGetAllUnapprovedProduct,
+  handleAddToCollection
 };
