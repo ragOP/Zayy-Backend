@@ -182,59 +182,83 @@ exports.handleGetBrandById = async (req, res) => {
 
 // Get Products based on filter and sorting
 exports.handleGetAllProducts = async (req, res) => {
-  try {
-    let filters = {};
-    let sellerfilter = {};
-    let sorting = "";
-    if (req.body.brand && req.body.brand.length > 0) {
-      sellerfilter.name = Array.isArray(req.body.brand)
-        ? { $in: req.body.brand }
-        : req.body.brand;
-    }
-    if (req.body.business) {
-      if (req.body.business === 1) {
-        sellerfilter.business_type = "brand";
-      }
-      if (req.body.business === 2) {
-        sellerfilter.business_type = "boutique";
-      }
-    }
-    filters.status = "approved";
-    if (req.body.boutique && req.body.boutique.length > 0) {
-      filters.boutique = Array.isArray(req.body.boutique)
-        ? { $in: req.body.boutique }
-        : req.body.boutique;
-    }
-    if (req.body.category && req.body.category.length > 0) {
-      filters.category = Array.isArray(req.body.category)
-        ? { $in: req.body.category }
-        : req.body.category;
-    }
-    if (req.body.sorting) {
-      if (req.body.sorting === "New") {
-        sorting = { createdAt: -1 };
-      }
-      if (req.body.sorting === "Price HTL") {
-        sorting = { price: -1 };
-      }
-      if (req.body.sorting === "Price LTH") {
-        sorting = { price: 1 };
-      }
-    }
-    const sellers = await Seller.find(sellerfilter);
-    const sellerIds = sellers.map((seller) => seller._id);
-    filters.createdBy = { $in: sellerIds };
-    const products = await Product.find(filters).sort(sorting || {});
+  try{
+    const {
+      brand, boutique, collection, category, gender,
+      name, colorname, size, price, sorting
+    } = req.body;
 
-    if (products.length === 0) {
-      return res.status(200).json({
-        message: "No Result Found!",
-        data: products,
-      });
+    let filters = {};
+    let sellerIds = [];
+
+    if (brand && brand.length) {
+      let sellerFilter = {};
+      sellerFilter.name = { $in: brand };
+      const sellers = await Seller.find(sellerFilter);
+      sellerIds = sellers.map(seller => seller._id);
+      filters.createdBy = { $in: sellerIds };
     }
+
+    if (boutique && boutique.length) {
+      let sellerFilter = {};
+      sellerFilter.name = { $in: boutique };
+      const sellers = await Seller.find(sellerFilter);
+      const boutiqueSellerIds = sellers.map(seller => seller._id);
+      sellerIds = [...sellerIds, boutiqueSellerIds];
+      filters.createdBy = { $in: sellerIds };
+    }
+
+    if (collection && collection.length) {
+      filters.collectionArray = { $in: collection };
+    }
+
+    if (category && category.length) {
+      filters.category = { $in: category };
+    }
+
+    if (gender && gender.length) {
+      filters.type = { $in: gender };
+    }
+
+    if (name) {
+      filters.name = { $regex: name, $options: 'i' };
+    }
+
+    filters.status = "approved";
+
+    if (colorname && colorname.length) {
+      filters.color = { $in: colorname.map(color => new RegExp(color, 'i')) };
+    }
+
+    if (size && size.length) {
+      filters.size = { $in: size.map(s => new RegExp(s, 'i')) };
+    }
+
+    if (price) {
+      if (price.min !== undefined) {
+        filters.price = { ...filters.price, $gte: price.min };
+      }
+      if (price.max !== undefined) {
+        filters.price = { ...filters.price, $lte: price.max };
+      }
+    }
+
+    let sort = {};
+    if (sorting) {
+      if (sorting === 'New') {
+        sort.created_at = -1;
+      } else if (sorting === 'Price HTL') {
+        sort.price = -1;
+      } else if (sorting === 'Price LTH') {
+        sort.price = 1;
+      }
+    }
+
+    console.log("test3",filters.createdBy)
+    const products = await Product.find(filters).sort(sort);
 
     return res.status(200).json({
-      message: "Fetched Successfully",
+      message: 'Fetched Successfully',
       data: products,
     });
   } catch (error) {
