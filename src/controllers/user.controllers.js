@@ -592,11 +592,12 @@ exports.handleGetBrandCollection = async (req, res) => {
 exports.handleGetAllMyOrders = async (req, res) => {
   const { id } = req. user;
   try {
-    const data = await Order.find({user: id});
+    let data = await Order.find({user: id});
     if(data.length == 0){
       return res.status(404).json({message: "No Orders Found"});
     }
-    return res.status(200).json({data, message: "Orders Fetched Successfully"})
+    const updtedData = data.map((items) => ({status: "completed", rating: 4, ...items.toObject()}));
+    return res.status(200).json({data: updtedData, message: "Orders Fetched Successfully"})
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ message: "Internal server error." });
