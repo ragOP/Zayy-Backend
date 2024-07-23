@@ -11,6 +11,7 @@ const Orders = require("../models/order.models");
 const cloudinary = require("../utils/cloudniary.utils");
 const fs = require("fs");
 const Collection = require("../models/collections.models");
+const Order = require("../models/order.models");
 
 // Get All Brand Products based on category filter
 exports.handleGetAllBrand = async (req, res) => {
@@ -254,7 +255,7 @@ exports.handleGetAllProducts = async (req, res) => {
       }
     }
 
-    console.log("test3",filters.createdBy)
+    // console.log("test3",filters.createdBy)
     const products = await Product.find(filters).sort(sort);
 
     return res.status(200).json({
@@ -582,6 +583,20 @@ exports.handleGetBrandCollection = async (req, res) => {
       return res.status(404).json({message: "No Collection Found"});
     }
     return res.status(200).json({data, message: "Collection Fetched"});
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+}
+
+exports.handleGetAllMyOrders = async (req, res) => {
+  const { id } = req. user;
+  try {
+    const data = await Order.find({user: id});
+    if(data.length == 0){
+      return res.status(404).json({message: "No Orders Found"});
+    }
+    return res.status(200).json({data, message: "Orders Fetched Successfully"})
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ message: "Internal server error." });

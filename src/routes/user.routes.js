@@ -24,7 +24,8 @@ const {
   updateCart,
   handleGetProfile,
   handlePlaceOrder,
-  handleGetBrandCollection
+  handleGetBrandCollection,
+  handleGetAllMyOrders
 } = require("../controllers/user.controllers");
 
 const router = express.Router();
@@ -68,6 +69,8 @@ router.route("/wishlist/remove").post(auth, handleRemoveWishlistItem);
 router.route("/placeOrder").post(auth, handlePlaceOrder);
 
 router.route("/brands/collection/:id").get(auth, handleGetBrandCollection);
+
+router.route("/myOrders").get(auth, handleGetAllMyOrders);
 
 // Error handling middleware -->
 router.use((err, req, res, next) => {
