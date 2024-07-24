@@ -596,8 +596,31 @@ exports.handleGetAllMyOrders = async (req, res) => {
     if(data.length == 0){
       return res.status(404).json({message: "No Orders Found"});
     }
-    const updtedData = data.map((items) => ({status: "completed", rating: 4, ...items.toObject()}));
-    return res.status(200).json({data: updtedData, message: "Orders Fetched Successfully"})
+
+    const products = data.map((items) => items.products);
+    const productIds = products.flatMap(items => items.map(item => item.productId));
+    const productData = await Product.find({ _id: { $in: productIds } });
+    // const productImage = productData.map(items => items.images[0]);
+
+    const productImageMap = new Map();
+    productData.map((items) => {
+      productImageMap.set(items._id.toString(), items.images);
+    })
+
+    const updatedData = data.map((items) => {
+      const updatedProducts = items.products.map((product) => ({
+        ...product.toObject(),
+        images: productImageMap.get(product.productId.toString())
+      }))
+      return {
+        status: "completd",
+        rating: 4,
+        ...items.toObject(),
+        products: updatedProducts,
+      }
+    })
+    
+    return res.status(200).json({data: updatedData, message: "Orders Fetched Successfully"})
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ message: "Internal server error." });
