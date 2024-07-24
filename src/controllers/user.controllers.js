@@ -594,7 +594,7 @@ exports.handleGetAllMyOrders = async (req, res) => {
   try {
     let data = await Order.find({user: id});
     if(data.length == 0){
-      return res.status(404).json({message: "No Orders Found"});
+      return res.status(404).json({message: "No Orders Found", data});
     }
 
     const products = data.map((items) => items.products);
