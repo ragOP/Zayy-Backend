@@ -150,9 +150,9 @@ const handleAddToCollection = async (req, res) => {
 }
 
 const handleGetPendingOrders = async (req, res) => {
-  const {id} = req.user;
+  const { id } = req.user;
   try {
-    const sellerProducts = await Product.find({createdBy: id, status: "approved"});
+    const sellerProducts = await Product.find({ createdBy: id, status: "approved" });
     const sellerProductIds = sellerProducts.map(product => product._id);
 
     const data = await Order.aggregate([
@@ -168,14 +168,45 @@ const handleGetPendingOrders = async (req, res) => {
         $match: {
           'products.productId': { $in: sellerProductIds }
         }
+      },
+      {
+        $group: {
+          _id: "$_id",
+          products: { $push: "$products" },
+          address: { $first: "$address" },
+          user: { $first: "$user" },
+          amount: { $first: "$amount" },
+          is_cod: { $first: "$is_cod" },
+          discount: { $first: "$discount" },
+          coupon: { $first: "$coupon" },
+          orderId: { $first: "$orderId" },
+          status: { $first: "$status" },
+          paymentId: { $first: "$paymentId" },
+          __v: { $first: "$__v" }
+        }
       }
     ]);
-    return res.status(200).json({data, message: "Orders Fetched Successfully!"})
+
+    const productIds = data.flatMap(order => order.products.map(p => p.productId.toString()));
+    const uniqueProductIds = [...new Set(productIds)];
+
+    const products = await Product.find({ _id: { $in: uniqueProductIds } });
+
+    const response = data.map(order => {
+      const detailedProducts = order.products.map(p => {
+        const productDetail = products.find(prod => prod._id.toString() === p.productId.toString());
+        return { ...p, productDetail };
+      });
+      return { ...order, products: detailedProducts };
+    });
+
+    return res.status(200).json({ data: response, message: "Orders Fetched Successfully!" });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "err " + error });
   }
 }
+
 
 module.exports = {
   handlecreateProduct,
