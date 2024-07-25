@@ -8,7 +8,8 @@ const {
   handleGetAllUnapprovedProduct,
   handleGetAllApprovedProduct,
   handleAddToCollection,
-  handleGetPendingOrders
+  handleGetPendingOrders,
+  handleGetCancelledOrders
 } = require("../controllers/seller.controllers");
 const { seller } = require("../middlewares/protectedRoutes.middlewares");
 
@@ -29,6 +30,8 @@ router.route("/getAllPendingProduct").get(seller, handleGetAllUnapprovedProduct)
 router.route("/addToColllection").post(seller, handleAddToCollection);
 
 router.route("/pendingOrders").get(seller, handleGetPendingOrders);
+
+router.route("/cancelOrder").get(seller, handleGetCancelledOrders);
 
 // Error handling middleware -->
 router.use((err, req, res, next) => {
