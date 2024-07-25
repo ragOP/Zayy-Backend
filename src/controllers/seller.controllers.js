@@ -69,110 +69,123 @@ const handlePostCollection = async (req, res) => {
   }
 
   try {
-    let collection = await Collection.find({name: name});
-    if(collection.length > 1){
-      return res.status(409).json({message: "Name Already Exist"});
+    let collection = await Collection.find({ name: name });
+    if (collection.length > 1) {
+      return res.status(409).json({ message: "Name Already Exist" });
     }
     collection = await Collection.create({
       name,
       sellerId: id,
-      image: logoUrl
-    })
-    return res.status(201).json({message: "Collection Created Sucessfully"});
+      image: logoUrl,
+    });
+    return res.status(201).json({ message: "Collection Created Sucessfully" });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "err " + error });
   }
-}
+};
 
 const handleGetCollection = async (req, res) => {
   const { id } = req.user;
   try {
-    const collection = await Collection.find({sellerId: id});
-    if(collection.length < 1){
-      return res.status(404).json({message: "No Collection Found"});
+    const collection = await Collection.find({ sellerId: id });
+    if (collection.length < 1) {
+      return res.status(404).json({ message: "No Collection Found" });
     }
-    return res.status(200).json({collection, message: "Collection Fetched Succesfully"})
+    return res
+      .status(200)
+      .json({ collection, message: "Collection Fetched Succesfully" });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "err " + error });
   }
-}
+};
 
 const handleGetAllApprovedProduct = async (req, res) => {
-  const {id} = req.user;
+  const { id } = req.user;
   try {
-    const data = await Product.find({createdBy: id, status: "approved"});
-    if(data.length < 1){
-      return res.status(404).json({message: "No Data Found"});
+    const data = await Product.find({ createdBy: id, status: "approved" });
+    if (data.length < 1) {
+      return res.status(404).json({ message: "No Data Found" });
     }
-    return res.status(200).json({message: "Product Fetched Sucessfully", data});
+    return res
+      .status(200)
+      .json({ message: "Product Fetched Sucessfully", data });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "err " + error });
   }
-}
+};
 
 const handleGetAllUnapprovedProduct = async (req, res) => {
-  const {id} = req.user;
+  const { id } = req.user;
   try {
-    const data = await Product.find({createdBy: id, status: "pending"});
-    if(data.length < 1){
-      return res.status(404).json({message: "No Data Found"});
+    const data = await Product.find({ createdBy: id, status: "pending" });
+    if (data.length < 1) {
+      return res.status(404).json({ message: "No Data Found" });
     }
-    return res.status(200).json({message: "Product Fetched Sucessfully", data});
+    return res
+      .status(200)
+      .json({ message: "Product Fetched Sucessfully", data });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "err " + error });
   }
-}
+};
 
 const handleAddToCollection = async (req, res) => {
-  const {name, product} = req.body;
+  const { name, product } = req.body;
   try {
-    const products = await Product.find({_id: {$in: product}});
+    const products = await Product.find({ _id: { $in: product } });
     if (products.length === 0) {
-      return res.status(404).json({ message: 'No products found matching the provided IDs' });
+      return res
+        .status(404)
+        .json({ message: "No products found matching the provided IDs" });
     }
 
-    for(const product of products){
+    for (const product of products) {
       await Product.findByIdAndUpdate(
         product._id,
-        {$addToSet: {collectionArray: name}},
-        {new: true}
-      )
+        { $addToSet: { collectionArray: name } },
+        { new: true }
+      );
     }
-    res.status(200).json({ message: 'Collection updated successfully' });
+    res.status(200).json({ message: "Collection updated successfully" });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "err " + error });
   }
-}
+};
 
 const handleGetPendingOrders = async (req, res) => {
   const { id } = req.user;
   try {
-    const sellerProducts = await Product.find({ createdBy: id, status: "approved" });
+    const sellerProducts = await Product.find({
+      createdBy: id,
+      status: "approved",
+    });
 
-    if(sellerProducts.length === 0){
-      return res.status(404).json({data: [], message: "Add products to get orders"})
+    if (sellerProducts.length === 0) {
+      return res
+        .status(404)
+        .json({ data: [], message: "Add products to get orders" });
     }
 
-    const sellerProductIds = sellerProducts.map(product => product._id);
+    const sellerProductIds = sellerProducts.map((product) => product._id);
 
     const data = await Order.aggregate([
       {
         $match: {
-          status: 'pending'
-        }
+          status: "pending",
+        },
       },
       {
-        $unwind: '$products'
+        $unwind: "$products",
       },
       {
         $match: {
-          'products.productId': { $in: sellerProductIds }
-        }
+          "products.productId": { $in: sellerProductIds },
+        },
       },
       {
         $group: {
@@ -187,57 +200,70 @@ const handleGetPendingOrders = async (req, res) => {
           orderId: { $first: "$orderId" },
           status: { $first: "$status" },
           paymentId: { $first: "$paymentId" },
-          __v: { $first: "$__v" }
-        }
-      }
+          __v: { $first: "$__v" },
+        },
+      },
     ]);
 
-    if(data.length === 0){
-      return res.status(404).json({data: [], message: "No cancelled orders found."});
+    if (data.length === 0) {
+      return res
+        .status(404)
+        .json({ data: [], message: "No cancelled orders found." });
     }
 
-    const productIds = data.flatMap(order => order.products.map(p => p.productId.toString()));
+    const productIds = data.flatMap((order) =>
+      order.products.map((p) => p.productId.toString())
+    );
 
     const products = await Product.find({ _id: { $in: productIds } });
 
-    const response = data.map(order => {
-      const detailedProducts = order.products.map(p => {
-        const productDetail = products.find(prod => prod._id.toString() === p.productId.toString());
+    const response = data.map((order) => {
+      const detailedProducts = order.products.map((p) => {
+        const productDetail = products.find(
+          (prod) => prod._id.toString() === p.productId.toString()
+        );
         return { ...p, productDetail };
       });
       return { ...order, products: detailedProducts };
     });
 
-    return res.status(200).json({ data: response, message: "Orders Fetched Successfully!" });
+    return res
+      .status(200)
+      .json({ data: response, message: "Orders Fetched Successfully!" });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "err " + error });
   }
-}
+};
 
 const handleGetCancelledOrders = async (req, res) => {
   const { id } = req.user;
   try {
-    const sellerProducts = await Product.find({ createdBy: id, status: "approved" });
+    const sellerProducts = await Product.find({
+      createdBy: id,
+      status: "approved",
+    });
 
-    if(sellerProducts.length === 0){
-      return res.status(404).json({data: [], message: "Add products to get orders"})
+    if (sellerProducts.length === 0) {
+      return res
+        .status(404)
+        .json({ data: [], message: "Add products to get orders" });
     }
-    const sellerProductIds = sellerProducts.map(product => product._id);
+    const sellerProductIds = sellerProducts.map((product) => product._id);
 
     const data = await Order.aggregate([
       {
         $match: {
-          status: 'rejected'
-        }
+          status: "rejected",
+        },
       },
       {
-        $unwind: '$products'
+        $unwind: "$products",
       },
       {
         $match: {
-          'products.productId': { $in: sellerProductIds }
-        }
+          "products.productId": { $in: sellerProductIds },
+        },
       },
       {
         $group: {
@@ -252,34 +278,60 @@ const handleGetCancelledOrders = async (req, res) => {
           orderId: { $first: "$orderId" },
           status: { $first: "$status" },
           paymentId: { $first: "$paymentId" },
-          __v: { $first: "$__v" }
-        }
-      }
+          __v: { $first: "$__v" },
+        },
+      },
     ]);
 
-    if(data.length === 0){
-      return res.status(404).json({data: [], message: "No cancelled orders found."});
+    if (data.length === 0) {
+      return res
+        .status(404)
+        .json({ data: [], message: "No cancelled orders found." });
     }
 
-    const productIds = data.flatMap(order => order.products.map(p => p.productId.toString()));
+    const productIds = data.flatMap((order) =>
+      order.products.map((p) => p.productId.toString())
+    );
 
     const products = await Product.find({ _id: { $in: productIds } });
 
-    const response = data.map(order => {
-      const detailedProducts = order.products.map(p => {
-        const productDetail = products.find(prod => prod._id.toString() === p.productId.toString());
+    const response = data.map((order) => {
+      const detailedProducts = order.products.map((p) => {
+        const productDetail = products.find(
+          (prod) => prod._id.toString() === p.productId.toString()
+        );
         return { ...p, productDetail };
       });
       return { ...order, products: detailedProducts };
     });
 
-    return res.status(200).json({ data: response, message: "Orders Fetched Successfully!" });
+    return res
+      .status(200)
+      .json({ data: response, message: "Orders Fetched Successfully!" });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "err " + error });
   }
-}
+};
 
+const handlePostCancelledOrders = async (req, res) => {
+  const { orderId } = req.body;
+
+  try {
+    const data = await Order.findByIdAndUpdate(
+      { _id: orderId },
+      { $set: { status: "rejected" } },
+      { new: true }
+    );
+    if (data.length === 0) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+    return res.status(200).json({ data, message: "Order status updated to rejected successfully!" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "err " + error });
+  }
+};
 
 module.exports = {
   handlecreateProduct,
@@ -289,5 +341,6 @@ module.exports = {
   handleGetAllUnapprovedProduct,
   handleAddToCollection,
   handleGetPendingOrders,
-  handleGetCancelledOrders
+  handleGetCancelledOrders,
+  handlePostCancelledOrders
 };
