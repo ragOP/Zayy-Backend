@@ -1,4 +1,5 @@
 const Collection = require("../models/collections.models");
+const Order = require("../models/order.models");
 const Product = require("../models/products.model");
 const cloudinary = require("../utils/cloudniary.utils");
 const fs = require("fs");
@@ -148,11 +149,40 @@ const handleAddToCollection = async (req, res) => {
   }
 }
 
+const handleGetPendingOrders = async (req, res) => {
+  const {id} = req.user;
+  try {
+    const sellerProducts = await Product.find({createdBy: id, status: "approved"});
+    const sellerProductIds = sellerProducts.map(product => product._id);
+
+    const data = await Order.aggregate([
+      {
+        $match: {
+          status: 'pending'
+        }
+      },
+      {
+        $unwind: '$products'
+      },
+      {
+        $match: {
+          'products.productId': { $in: sellerProductIds }
+        }
+      }
+    ]);
+    return res.status(200).json({data, message: "Orders Fetched Successfully!"})
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "err " + error });
+  }
+}
+
 module.exports = {
   handlecreateProduct,
   handlePostCollection,
   handleGetCollection,
   handleGetAllApprovedProduct,
   handleGetAllUnapprovedProduct,
-  handleAddToCollection
+  handleAddToCollection,
+  handleGetPendingOrders
 };

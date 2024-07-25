@@ -613,7 +613,6 @@ exports.handleGetAllMyOrders = async (req, res) => {
         images: productImageMap.get(product.productId.toString())
       }))
       return {
-        status: "completd",
         rating: 4,
         ...items.toObject(),
         products: updatedProducts,

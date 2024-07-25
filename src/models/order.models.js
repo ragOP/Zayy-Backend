@@ -66,6 +66,10 @@ const orderSchema = new Schema({
   orderId: {
     type: String, required: true 
   },
+  status: {
+    type: String,
+    default: "pending"
+  },
   paymentId: {
     type: String, required: true 
   },
