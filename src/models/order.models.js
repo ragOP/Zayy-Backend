@@ -73,7 +73,7 @@ const orderSchema = new Schema({
   paymentId: {
     type: String, required: true 
   },
-});
+}, {timestamps: true});
 
 const Order = mongoose.model('Order', orderSchema);
 module.exports = Order;

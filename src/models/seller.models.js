@@ -59,7 +59,7 @@ const sellerSchema = new mongoose.Schema({
   description:{
     type: String,
   }
-});
+},  {timestamps: true});
 
 const Seller = mongoose.model("Seller", sellerSchema);
 

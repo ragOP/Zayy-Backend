@@ -4,6 +4,8 @@ const Product = require("../models/products.model");
 const Seller = require("../models/seller.models");
 const Thumbnail = require("../models/thumbnail.models");
 const User = require("../models/users.models");
+const Cart = require("../models/cart.models");
+const Wishlist = require("../models/wishlist.models");
 const cloudinary = require("../utils/cloudniary.utils");
 const fs = require("fs");
 
@@ -190,6 +192,52 @@ const handleGetAllOrders = async (req, res) => {
   }
 }
 
+const handleGetUserCart = async (req, res) => {
+  const id = req.params.id;
+
+  try {
+    const data = await Cart.find({userId: id});
+    if(data.length === 0){
+      return res.status(404).json({data: [], message: "No cart item found"})
+    }
+
+    const productIds = data.map(items => items.productId);
+
+    const products = await Product.find({_id: {$in: productIds}});
+
+    if(products.length < 1){
+      return res.send({data: [], message: "No Product Found!"});
+    }
+    return res.status(200).json({data: products, message: "Cart items fetched successfully"})
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+}
+
+const handleGetUserWishlist = async (req, res) => {
+  const id = req.params.id;
+
+  try {
+    const data = await Wishlist.find({userId: id});
+    if(data.length === 0){
+      return res.status(404).json({data: [], message: "No cart item found"})
+    }
+
+    const productIds = data.map(items => items.productId);
+
+    const products = await Product.find({_id: {$in: productIds}});
+
+    if(products.length < 1){
+      return res.send({data: [], message: "No Product Found!"});
+    }
+    return res.status(200).json({data: products, message: "Wislist items fetched successfully"})
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+}
+
 module.exports = {
   handleGetAllProducts,
   handleGetAllPendingProducts,
@@ -200,5 +248,7 @@ module.exports = {
   handlegetAll,
   handlePostBanners,
   handlePostThumbnail,
-  handleGetAllOrders
+  handleGetAllOrders,
+  handleGetUserCart,
+  handleGetUserWishlist,
 };
