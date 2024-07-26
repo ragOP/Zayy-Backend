@@ -198,7 +198,7 @@ const handleGetUserCart = async (req, res) => {
   try {
     const data = await Cart.find({userId: id});
     if(data.length === 0){
-      return res.status(403).json({data: [], message: "No cart item found"})
+      return res.status(404).json({data: [], message: "No cart item found"})
     }
 
     const productIds = data.map(items => items.productId);
@@ -208,7 +208,23 @@ const handleGetUserCart = async (req, res) => {
     if(products.length < 1){
       return res.send({data: [], message: "No Product Found!"});
     }
-    return res.status(200).json({data: products, message: "Cart items fetched successfully"})
+
+    const productMap = new Map();
+    products.forEach(product => {
+      productMap.set(product._id.toString(), product);
+    });
+
+
+    const updatedData = data.map((items) => {
+      const product = productMap.get(items.productId.toString());
+      return {
+          ...product.toObject(),
+          size: items.size,  
+          color: items.colorname,
+      }
+    })
+
+    return res.status(200).json({data: updatedData, message: "Cart items fetched successfully"})
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ message: "Internal server error." });
@@ -221,7 +237,7 @@ const handleGetUserWishlist = async (req, res) => {
   try {
     const data = await Wishlist.find({userId: id});
     if(data.length === 0){
-      return res.status(403).json({data: [], message: "No cart item found"})
+      return res.status(404).json({data: [], message: "No cart item found"})
     }
 
     const productIds = data.map(items => items.productId);
