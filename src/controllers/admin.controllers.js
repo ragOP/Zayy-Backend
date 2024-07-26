@@ -198,7 +198,7 @@ const handleGetUserCart = async (req, res) => {
   try {
     const data = await Cart.find({userId: id});
     if(data.length === 0){
-      return res.status(404).json({data: [], message: "No cart item found"})
+      return res.status(403).json({data: [], message: "No cart item found"})
     }
 
     const productIds = data.map(items => items.productId);
@@ -221,7 +221,7 @@ const handleGetUserWishlist = async (req, res) => {
   try {
     const data = await Wishlist.find({userId: id});
     if(data.length === 0){
-      return res.status(404).json({data: [], message: "No cart item found"})
+      return res.status(403).json({data: [], message: "No cart item found"})
     }
 
     const productIds = data.map(items => items.productId);
