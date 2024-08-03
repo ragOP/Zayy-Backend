@@ -333,6 +333,85 @@ const handlePostCancelledOrders = async (req, res) => {
   }
 };
 
+const handleGetApprovedOrders = async (req, res) => {
+  const { id } = req.user;
+  try {
+    const sellerProducts = await Product.find({
+      createdBy: id,
+      status: "approved",
+    });
+
+    if (sellerProducts.length === 0) {
+      return res
+        .status(404)
+        .json({ data: [], message: "Add products to get orders" });
+    }
+
+    const sellerProductIds = sellerProducts.map((product) => product._id);
+
+    const data = await Order.aggregate([
+      {
+        $match: {
+          status: "approved",
+        },
+      },
+      {
+        $unwind: "$products",
+      },
+      {
+        $match: {
+          "products.productId": { $in: sellerProductIds },
+        },
+      },
+      {
+        $group: {
+          _id: "$_id",
+          products: { $push: "$products" },
+          address: { $first: "$address" },
+          user: { $first: "$user" },
+          amount: { $first: "$amount" },
+          is_cod: { $first: "$is_cod" },
+          discount: { $first: "$discount" },
+          coupon: { $first: "$coupon" },
+          orderId: { $first: "$orderId" },
+          status: { $first: "$status" },
+          paymentId: { $first: "$paymentId" },
+          __v: { $first: "$__v" },
+        },
+      },
+    ]);
+
+    if (data.length === 0) {
+      return res
+        .status(404)
+        .json({ data: [], message: "No cancelled orders found." });
+    }
+
+    const productIds = data.flatMap((order) =>
+      order.products.map((p) => p.productId.toString())
+    );
+
+    const products = await Product.find({ _id: { $in: productIds } });
+
+    const response = data.map((order) => {
+      const detailedProducts = order.products.map((p) => {
+        const productDetail = products.find(
+          (prod) => prod._id.toString() === p.productId.toString()
+        );
+        return { ...p, productDetail };
+      });
+      return { ...order, products: detailedProducts };
+    });
+
+    return res
+      .status(200)
+      .json({ data: response, message: "Orders Fetched Successfully!" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "err " + error });
+  }
+};
+
 module.exports = {
   handlecreateProduct,
   handlePostCollection,
@@ -342,5 +421,6 @@ module.exports = {
   handleAddToCollection,
   handleGetPendingOrders,
   handleGetCancelledOrders,
-  handlePostCancelledOrders
+  handlePostCancelledOrders,
+  handleGetApprovedOrders
 };

@@ -68,7 +68,7 @@ const orderSchema = new Schema({
   },
   status: {
     type: String,
-    default: "pending"
+    default: "approved"
   },
   paymentId: {
     type: String, required: true 

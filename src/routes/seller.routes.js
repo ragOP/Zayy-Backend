@@ -10,7 +10,8 @@ const {
   handleAddToCollection,
   handleGetPendingOrders,
   handleGetCancelledOrders,
-  handlePostCancelledOrders
+  handlePostCancelledOrders,
+  handleGetApprovedOrders
 } = require("../controllers/seller.controllers");
 const { seller } = require("../middlewares/protectedRoutes.middlewares");
 
@@ -31,6 +32,8 @@ router.route("/getAllPendingProduct").get(seller, handleGetAllUnapprovedProduct)
 router.route("/addToColllection").post(seller, handleAddToCollection);
 
 router.route("/pendingOrders").get(seller, handleGetPendingOrders);
+
+router.route("/approvedOrders").get(seller, handleGetApprovedOrders);
 
 router.route("/cancelOrder").get(seller, handleGetCancelledOrders).post(seller, handlePostCancelledOrders);
 
