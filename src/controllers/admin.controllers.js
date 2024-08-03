@@ -8,6 +8,7 @@ const Cart = require("../models/cart.models");
 const Wishlist = require("../models/wishlist.models");
 const cloudinary = require("../utils/cloudniary.utils");
 const fs = require("fs");
+const Category = require("../models/categories.models");
 
 // Get All Products -->
 const handleGetAllProducts = async (req, res) => {
@@ -254,6 +255,30 @@ const handleGetUserWishlist = async (req, res) => {
   }
 }
 
+const handleAddCategory = async (req, res) => {
+  const { name, sub_categories } = req.body;
+  try {
+    const category = await Category.findOne({name});
+    if(category) return res.status(409).json({'message': 'Category already found'});
+
+    let imgUrl = "";
+    if (req.file) {
+      const logoUrlResponse = await cloudinary.uploader.upload(req.file.path);
+      imgUrl = logoUrlResponse.secure_url;
+      fs.unlinkSync(req.file.path);
+    }
+    const newCategory = await Category.create({
+      name,
+      sub_categories,
+      image: imgUrl
+    });
+    return res.status(201).json({data: newCategory, message: "Category Added"});
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+}
+
 module.exports = {
   handleGetAllProducts,
   handleGetAllPendingProducts,
@@ -267,4 +292,5 @@ module.exports = {
   handleGetAllOrders,
   handleGetUserCart,
   handleGetUserWishlist,
+  handleAddCategory
 };
