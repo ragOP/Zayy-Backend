@@ -625,3 +625,15 @@ exports.handleGetAllMyOrders = async (req, res) => {
     res.status(500).json({ message: "Internal server error." });
   }
 }
+
+exports.handleGetReviews = async (req, res) => {
+  const id = req.params.id;
+  try {
+    const reviews = await Review.find({postId: id});
+    if(reviews.length === 0) return res.status(404).json({data: [], 'message': 'No review found'});
+    return res.status(200).json({data: reviews, 'message': 'All Reviews Fetched'});
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+}

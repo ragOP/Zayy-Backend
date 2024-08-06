@@ -25,7 +25,8 @@ const {
   handleGetProfile,
   handlePlaceOrder,
   handleGetBrandCollection,
-  handleGetAllMyOrders
+  handleGetAllMyOrders,
+  handleGetReviews
 } = require("../controllers/user.controllers");
 
 const router = express.Router();
@@ -53,6 +54,8 @@ router.route("/product/:id").get(auth, handleGetParticularProduct);
 router
   .route("/rateProduct")
   .post(upload.single("image"), auth, handlePostReview);
+
+router.route("/getReviews/:id").get(auth, handleGetReviews);
 
 // Cart and Wishlist -->
 router.route("/cart").post(auth, handleAddToCart).get(auth, handleGetCart);

@@ -13,6 +13,7 @@ const userRoutes = require("./src/routes/user.routes");
 
 // Middlewares
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
 //Database Connection
