@@ -568,7 +568,9 @@ exports.handlePlaceOrder = async (req, res) => {
       orderId,
       paymentId
     });
-    return res.status(201).json({ message: "Order Placed Sucessfully" });
+    const product = await Product.findById(products[0].productId);
+    const productImg = product.images[0];
+    return res.status(201).json({ data: productImg, message: "Order Placed Sucessfully" });
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ message: "Internal server error." });
