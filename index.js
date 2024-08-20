@@ -1,9 +1,10 @@
 const express = require("express");
 const app = express();
 const cors = require("cors");
+const admin = require('firebase-admin');
 require("dotenv").config();
 
-const PORT = process.env.PORT || 8000;
+const PORT = process.env.PORT || 9000;
 
 const handleConnectionToDB = require("./src/db/config.db");
 const authRoutes = require("./src/routes/auth.routes");
@@ -24,6 +25,11 @@ handleConnectionToDB(process.env.MONGO_URI)
   .catch((err) => {
     console.error(`Something went wrong`, err);
   });
+
+const serviceAccount = require("./src/firebase/serviceAccountKey");
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+});
 
 //Routes
 app.use("/api/auth", authRoutes);

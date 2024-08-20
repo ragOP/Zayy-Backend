@@ -14,7 +14,8 @@ const {
   handleGetAllOrders,
   handleGetUserCart,
   handleGetUserWishlist,
-  handleAddCategory
+  handleAddCategory,
+  handlePushNotification
 } = require("../controllers/admin.controllers");
 const { admin } = require("../middlewares/protectedRoutes.middlewares");
 
@@ -52,6 +53,7 @@ router.route("/getAllOrders").get(admin, handleGetAllOrders);
 router.route('/getUserCart/:id').get(admin, handleGetUserCart);
 router.route('/getUserWishlist/:id').get(admin, handleGetUserWishlist);
 router.route('/addCategory').post(upload.single("image"), admin, handleAddCategory);
+router.route('/sendNotification').post(upload.single("banner"), admin, handlePushNotification);
 
 // Error handling middleware -->
 router.use((err, req, res, next) => {

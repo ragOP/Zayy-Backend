@@ -9,6 +9,7 @@ const Wishlist = require("../models/wishlist.models");
 const cloudinary = require("../utils/cloudniary.utils");
 const fs = require("fs");
 const Category = require("../models/categories.models");
+const admin = require("firebase-admin");
 
 // Get All Products -->
 const handleGetAllProducts = async (req, res) => {
@@ -182,84 +183,90 @@ const handlePostBanners = async (req, res) => {
 
 const handleGetAllOrders = async (req, res) => {
   try {
-    const orders =  await Order.find({});
-    if(orders.length < 1){
-      return res.status(404).json({message: "No Orders Found"});
+    const orders = await Order.find({});
+    if (orders.length < 1) {
+      return res.status(404).json({ message: "No Orders Found" });
     }
-    return res.status(200).json({orders, message: "All Ordes Fetched Successfully!"})
+    return res
+      .status(200)
+      .json({ orders, message: "All Ordes Fetched Successfully!" });
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ message: "Internal server error." });
   }
-}
+};
 
 const handleGetUserCart = async (req, res) => {
   const id = req.params.id;
 
   try {
-    const data = await Cart.find({userId: id});
-    if(data.length === 0){
-      return res.status(404).json({data: [], message: "No cart item found"})
+    const data = await Cart.find({ userId: id });
+    if (data.length === 0) {
+      return res.status(404).json({ data: [], message: "No cart item found" });
     }
 
-    const productIds = data.map(items => items.productId);
+    const productIds = data.map((items) => items.productId);
 
-    const products = await Product.find({_id: {$in: productIds}});
+    const products = await Product.find({ _id: { $in: productIds } });
 
-    if(products.length < 1){
-      return res.send({data: [], message: "No Product Found!"});
+    if (products.length < 1) {
+      return res.send({ data: [], message: "No Product Found!" });
     }
 
     const productMap = new Map();
-    products.forEach(product => {
+    products.forEach((product) => {
       productMap.set(product._id.toString(), product);
     });
-
 
     const updatedData = data.map((items) => {
       const product = productMap.get(items.productId.toString());
       return {
-          ...product.toObject(),
-          size: items.size,  
-          color: items.colorname,
-      }
-    })
+        ...product.toObject(),
+        size: items.size,
+        color: items.colorname,
+      };
+    });
 
-    return res.status(200).json({data: updatedData, message: "Cart items fetched successfully"})
+    return res
+      .status(200)
+      .json({ data: updatedData, message: "Cart items fetched successfully" });
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ message: "Internal server error." });
   }
-}
+};
 
 const handleGetUserWishlist = async (req, res) => {
   const id = req.params.id;
 
   try {
-    const data = await Wishlist.find({userId: id});
-    if(data.length === 0){
-      return res.status(404).json({data: [], message: "No cart item found"})
+    const data = await Wishlist.find({ userId: id });
+    if (data.length === 0) {
+      return res.status(404).json({ data: [], message: "No cart item found" });
     }
 
-    const productIds = data.map(items => items.productId);
+    const productIds = data.map((items) => items.productId);
 
-    const products = await Product.find({_id: {$in: productIds}});
+    const products = await Product.find({ _id: { $in: productIds } });
 
-    if(products.length < 1){
-      return res.send({data: [], message: "No Product Found!"});
+    if (products.length < 1) {
+      return res.send({ data: [], message: "No Product Found!" });
     }
-    return res.status(200).json({data: products, message: "Wislist items fetched successfully"})
+    return res
+      .status(200)
+      .json({ data: products, message: "Wislist items fetched successfully" });
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ message: "Internal server error." });
   }
-}
+};
 
 const handleAddCategory = async (req, res) => {
   const { name, sub_categories } = req.body;
   try {
-    const category = await Category.findOne({name});
-    if(category) return res.status(409).json({'message': 'Category already found'});
+    const category = await Category.findOne({ name });
+    if (category)
+      return res.status(409).json({ message: "Category already found" });
 
     let imgUrl = "";
     if (req.file) {
@@ -270,14 +277,55 @@ const handleAddCategory = async (req, res) => {
     const newCategory = await Category.create({
       name,
       sub_categories,
-      image: imgUrl
+      image: imgUrl,
     });
-    return res.status(201).json({data: newCategory, message: "Category Added"});
+    return res
+      .status(201)
+      .json({ data: newCategory, message: "Category Added" });
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ message: "Internal server error." });
   }
-}
+};
+
+const handlePushNotification = async (req, res) => {
+  const { title, description } = req.body;
+  let bannerUrl = "";
+
+  if (req.file) {
+    try {
+      const bannerUrlResponse = await cloudinary.uploader.upload(req.file.path);
+      bannerUrl = bannerUrlResponse.secure_url;
+      fs.unlinkSync(req.file.path);
+    } catch (uploadError) {
+      console.error("Error uploading image:", uploadError);
+      return res.status(500).json({ message: "Error uploading image." });
+    }
+  }
+
+  const deviceTokens = ['fOmwhsZlTtSqrakPRAv-cB:APA91bHnpWuGAsE_PD-DjydbyOCTE2QORKUjHZVwjiIVlw8Le7nK6Y71DaBp21eWQYo13daoR546DraKfKnzI_To9wZuXVrXH8LlvpcDKd3gN8TGY9HaQs5g1WBdEIgy0J_cwUdkb2UD'];
+  const payload = {
+    notification: {
+      title: title,
+      body: description,
+      image: bannerUrl,
+    },
+  };
+
+  try {
+    const response = await admin.messaging().sendToDevice(deviceTokens, payload);
+    response.results.forEach((result, index) => {
+      if (result.error) {
+        console.error(`Failure sending to ${deviceTokens[index]}: ${result.error.message}`);
+      }
+    });
+    res.status(200).send(`Successfully sent message.`);
+  } catch (error) {
+    console.error("Error sending notification:", error.message);
+    res.status(500).json({ message: "Internal server error." });
+  }
+};
+
 
 module.exports = {
   handleGetAllProducts,
@@ -292,5 +340,6 @@ module.exports = {
   handleGetAllOrders,
   handleGetUserCart,
   handleGetUserWishlist,
-  handleAddCategory
+  handleAddCategory,
+  handlePushNotification
 };
