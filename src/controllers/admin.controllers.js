@@ -308,7 +308,6 @@ const handlePushNotification = async (req, res) => {
       title: title,
       body: description,
       image: bannerUrl,
-      icon: "http://localhost:9000/public/notification_icon.png",
     },
   };
 
