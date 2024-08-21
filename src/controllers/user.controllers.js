@@ -254,8 +254,6 @@ exports.handleGetAllProducts = async (req, res) => {
         sort.price = 1;
       }
     }
-
-    // console.log("test3",filters.createdBy)
     const products = await Product.find(filters).sort(sort);
 
     return res.status(200).json({
@@ -331,6 +329,7 @@ exports.handlePostReview = async (req, res) => {
     imgUrl = logoUrlResponse.secure_url;
     fs.unlinkSync(req.file.path);
   }
+  console.log(review, rating, postId, req.file, imgUrl, "Sayem Kalim");
   try {
     await Review.create({
       postId,
@@ -434,7 +433,6 @@ exports.handleAddToWishlist = async (req, res) => {
     console.error("Error:", error);
     res.status(500).json({ message: "Internal server error." });
   }
-  console.log(req.user);
 };
 
 exports.handleGetCart = async (req, res) => {
@@ -463,7 +461,6 @@ exports.handleGetCart = async (req, res) => {
       }
       return product;
     });
-    console.log(productsWithCartInfo);
     return res.status(200).json({ products: productsWithCartInfo });
   } catch (error) {
     console.error("Error:", error);

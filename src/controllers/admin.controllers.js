@@ -302,13 +302,13 @@ const handlePushNotification = async (req, res) => {
       return res.status(500).json({ message: "Error uploading image." });
     }
   }
-
   const deviceTokens = ['fOmwhsZlTtSqrakPRAv-cB:APA91bHnpWuGAsE_PD-DjydbyOCTE2QORKUjHZVwjiIVlw8Le7nK6Y71DaBp21eWQYo13daoR546DraKfKnzI_To9wZuXVrXH8LlvpcDKd3gN8TGY9HaQs5g1WBdEIgy0J_cwUdkb2UD'];
   const payload = {
     notification: {
       title: title,
       body: description,
       image: bannerUrl,
+      icon: "http://localhost:9000/public/notification_icon.png",
     },
   };
 

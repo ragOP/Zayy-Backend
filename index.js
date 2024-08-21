@@ -1,10 +1,13 @@
 const express = require("express");
 const app = express();
+const path = require("path");
 const cors = require("cors");
 const admin = require('firebase-admin');
 require("dotenv").config();
 
 const PORT = process.env.PORT || 9000;
+
+app.use('/public', express.static(path.join(__dirname, '/public/assests/')));
 
 const handleConnectionToDB = require("./src/db/config.db");
 const authRoutes = require("./src/routes/auth.routes");
@@ -26,6 +29,7 @@ handleConnectionToDB(process.env.MONGO_URI)
     console.error(`Something went wrong`, err);
   });
 
+// Firebase Config
 const serviceAccount = require("./src/firebase/serviceAccountKey");
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
