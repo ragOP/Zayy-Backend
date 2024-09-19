@@ -1,5 +1,6 @@
 const Collection = require("../models/collections.models");
 const Order = require("../models/order.models");
+const Post = require("../models/post.models");
 const Product = require("../models/products.model");
 const cloudinary = require("../utils/cloudniary.utils");
 const fs = require("fs");
@@ -412,6 +413,28 @@ const handleGetApprovedOrders = async (req, res) => {
   }
 };
 
+const handleAddPost = async (req, res) => {
+  const {caption, sellerId } = req.body;
+
+  try {
+    let imgUrl = "";
+    if (req.file) {
+      const imgUrlResponse = await cloudinary.uploader.upload(req.file.path);
+      imgUrl = imgUrlResponse.secure_url;
+      fs.unlinkSync(req.file.path);
+    }
+    Post.create({
+      caption,
+      sellerId,
+      image: imgUrl
+    })
+    return res.status(200).json({ message: "Post Added Successfully!" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "err " + error });
+  }
+}
+
 module.exports = {
   handlecreateProduct,
   handlePostCollection,
@@ -422,5 +445,6 @@ module.exports = {
   handleGetPendingOrders,
   handleGetCancelledOrders,
   handlePostCancelledOrders,
-  handleGetApprovedOrders
+  handleGetApprovedOrders,
+  handleAddPost
 };
