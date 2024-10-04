@@ -12,6 +12,7 @@ const Category = require("../models/categories.models");
 const admin = require("firebase-admin");
 
 // Get All Products -->
+// Comment to check if web service is deploying correctly or not.
 const handleGetAllProducts = async (req, res) => {
   try {
     const products = await Product.find({});
