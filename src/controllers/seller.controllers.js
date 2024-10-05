@@ -414,20 +414,31 @@ const handleGetApprovedOrders = async (req, res) => {
 };
 
 const handleAddPost = async (req, res) => {
-  const {caption, sellerId } = req.body;
-
+  const { isPool, poolQuestion, poolAnswerFirst, poolAnswerSecond } = req.body;
+  const { id } = req.user;
   try {
     let imgUrl = "";
+    let answers = [];
     if (req.file) {
       const imgUrlResponse = await cloudinary.uploader.upload(req.file.path);
       imgUrl = imgUrlResponse.secure_url;
       fs.unlinkSync(req.file.path);
     }
-    Post.create({
-      caption,
-      sellerId,
-      image: imgUrl
-    })
+    if(isPool){
+      answers = [poolAnswerFirst, poolAnswerSecond];
+      await Post.create({
+        sellerId: id,
+        image: imgUrl,
+        poolQuestion,
+        poolAnswers: answers,
+        isPool
+      })
+    }else{
+      await Post.create({
+        sellerId: id,
+        image: imgUrl
+      })
+    }
     return res.status(200).json({ message: "Post Added Successfully!" });
   } catch (error) {
     console.log(error);

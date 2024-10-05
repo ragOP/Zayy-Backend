@@ -3,10 +3,6 @@ const Schema = mongoose.Schema;
 
 const postSchema = new Schema(
   {
-    caption: {
-      type: String,
-      required: true,
-    },
     sellerId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Seller",
@@ -15,6 +11,16 @@ const postSchema = new Schema(
     image: {
       type: String,
       required: true,
+    },
+    isPool:{
+      type: Boolean,
+      default: false,
+    },
+    poolQuestion: {
+      type: String,
+    },
+    poolAnswers: {
+      type: Array,
     },
     likeCount: {
      type: String,
