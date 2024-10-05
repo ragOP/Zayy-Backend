@@ -674,3 +674,20 @@ exports.handlePostCommentOnDiscover = async (req, res) => {
     res.status(500).json({ message: "Internal server error." });
   }
 }
+
+exports.handlePostLikeOnPost = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const post = await Post.findByIdAndUpdate(id);
+    if(!post) return res.status(404).json({message: 'No post found'});
+    if(post.likes.includes(req.user.id)){
+      return res.status(400).json({message: 'User already liked'});
+    }
+    post.likes.push(req.user.id);
+    await post.save();
+    return res.status(200).json({data: post, message: 'Like added'});
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+}

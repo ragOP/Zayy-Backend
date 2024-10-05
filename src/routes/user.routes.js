@@ -28,7 +28,8 @@ const {
   handleGetAllMyOrders,
   handleGetReviews,
   handleGetDiscoverPage,
-  handlePostCommentOnDiscover
+  handlePostCommentOnDiscover,
+  handlePostLikeOnPost
 } = require("../controllers/user.controllers");
 
 const router = express.Router();
@@ -79,6 +80,7 @@ router.route("/myOrders").get(auth, handleGetAllMyOrders);
 
 router.route("/getDiscoverPage").get(auth, handleGetDiscoverPage);
 router.route("/addCommentOnPost").post(auth, handlePostCommentOnDiscover);
+router.route("/updateLike/:id").get(auth, handlePostLikeOnPost);
 
 // Error handling middleware -->
 router.use((err, req, res, next) => {

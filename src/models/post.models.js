@@ -22,9 +22,9 @@ const postSchema = new Schema(
     poolAnswers: {
       type: Array,
     },
-    likeCount: {
-     type: String,
-     default: 0,
+    likes:{
+      type: Array,
+      default: [],
     },
     comments: [
      {
