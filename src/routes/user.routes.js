@@ -26,7 +26,9 @@ const {
   handlePlaceOrder,
   handleGetBrandCollection,
   handleGetAllMyOrders,
-  handleGetReviews
+  handleGetReviews,
+  handleGetDiscoverPage,
+  handlePostCommentOnDiscover
 } = require("../controllers/user.controllers");
 
 const router = express.Router();
@@ -74,6 +76,9 @@ router.route("/placeOrder").post(auth, handlePlaceOrder);
 router.route("/brands/collection/:id").get(auth, handleGetBrandCollection);
 
 router.route("/myOrders").get(auth, handleGetAllMyOrders);
+
+router.route("/getDiscoverPage").get(auth, handleGetDiscoverPage);
+router.route("/addCommentOnPost").post(auth, handlePostCommentOnDiscover);
 
 // Error handling middleware -->
 router.use((err, req, res, next) => {

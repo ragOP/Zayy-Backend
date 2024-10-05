@@ -12,6 +12,8 @@ const cloudinary = require("../utils/cloudniary.utils");
 const fs = require("fs");
 const Collection = require("../models/collections.models");
 const Order = require("../models/order.models");
+const Post = require("../models/post.models");
+const Comment = require("../models/comment.models");
 
 // Get All Brand Products based on category filter
 exports.handleGetAllBrand = async (req, res) => {
@@ -631,6 +633,42 @@ exports.handleGetReviews = async (req, res) => {
     const reviews = await Review.find({postId: id});
     if(reviews.length === 0) return res.status(404).json({data: [], 'message': 'No review found'});
     return res.status(200).json({data: reviews, 'message': 'All Reviews Fetched'});
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+}
+
+exports.handleGetDiscoverPage = async (req, res) => {
+  try {
+    const posts = await Post.find({}).sort({createdAt: -1}).populate({
+      path: 'comments',
+      populate: {
+        path: 'userId', 
+        select: 'name',
+      },
+    });
+    if(posts.length === 0) return res.status(404).json({data: [], 'message': 'No review found'});
+    return res.status(200).json({data: posts, 'message': 'All post Fetched'});
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+}
+
+exports.handlePostCommentOnDiscover = async (req, res) => {
+  const { content, postId } = req.body;
+  const { id } = req.user;
+  try {
+    const comment = await Comment.create({
+      comment: content,
+      postId,
+      userId: id,
+    })
+    const post = await Post.findById(postId);
+    post.comments.push(comment._id);
+    post.save();
+    return res.status(200).json({'message': 'Comment Added'});
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ message: "Internal server error." });
