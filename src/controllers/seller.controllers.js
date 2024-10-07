@@ -414,7 +414,7 @@ const handleGetApprovedOrders = async (req, res) => {
 };
 
 const handleAddPost = async (req, res) => {
-  const { isPool, poolQuestion, poolAnswerFirst, poolAnswerSecond } = req.body;
+  const { content, isPool, poolQuestion, poolAnswerFirst, poolAnswerSecond } = req.body;
   const { id } = req.user;
   try {
     let imgUrl = "";
@@ -427,6 +427,7 @@ const handleAddPost = async (req, res) => {
     if(isPool){
       answers = [poolAnswerFirst, poolAnswerSecond];
       await Post.create({
+        content,
         sellerId: id,
         image: imgUrl,
         poolQuestion,
@@ -436,6 +437,7 @@ const handleAddPost = async (req, res) => {
     }else{
       await Post.create({
         sellerId: id,
+        content,
         image: imgUrl
       })
     }

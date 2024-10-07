@@ -3,6 +3,9 @@ const Schema = mongoose.Schema;
 
 const postSchema = new Schema(
   {
+    content: {
+      type: String,
+    },
     sellerId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Seller",
