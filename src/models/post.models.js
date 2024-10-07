@@ -29,6 +29,18 @@ const postSchema = new Schema(
       type: Array,
       default: [],
     },
+    votesOnFirstOption:{
+      type: Array,
+      default: [],
+    },
+    votesOnSecondOption:{
+      type: Array,
+      default: [],
+    },
+    totalVotes: {
+      type: Number,
+      default: 0,
+    },
     comments: [
      {
        type: mongoose.Schema.Types.ObjectId,

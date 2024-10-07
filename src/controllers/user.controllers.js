@@ -691,3 +691,25 @@ exports.handlePostLikeOnPost = async (req, res) => {
     res.status(500).json({ message: "Internal server error." });
   }
 }
+exports.handleVoteOnDiscover = async (req, res) => {
+  const { id } = req.params;
+  const { vote } = req.body;
+  try {
+    const post = await Post.findByIdAndUpdate(id);
+    if(!post) return res.status(404).json({message: 'No post found'});
+    if(post.votesOnFirstOption.includes(req.user.id) || post.votesOnSecondOption.includes(req.user.id)){
+      return res.status(400).json({message: 'User already voted'});
+    }
+    if(vote == 1){
+      post.votesOnFirstOption.push(req.user.id);
+    }else{
+      post.votesOnSecondOption.push(req.user.id);
+    }
+    post.totalVotes++;
+    await post.save();
+    return res.status(200).json({data: post, message: 'Vote added'});
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+}
