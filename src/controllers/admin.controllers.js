@@ -10,6 +10,7 @@ const cloudinary = require("../utils/cloudniary.utils");
 const fs = require("fs");
 const Category = require("../models/categories.models");
 const admin = require("firebase-admin");
+const Post = require("../models/post.models");
 
 // Get All Products -->
 // Comment to check if web service is deploying correctly or not.
@@ -303,7 +304,9 @@ const handlePushNotification = async (req, res) => {
       return res.status(500).json({ message: "Error uploading image." });
     }
   }
-  const deviceTokens = ['fOmwhsZlTtSqrakPRAv-cB:APA91bHnpWuGAsE_PD-DjydbyOCTE2QORKUjHZVwjiIVlw8Le7nK6Y71DaBp21eWQYo13daoR546DraKfKnzI_To9wZuXVrXH8LlvpcDKd3gN8TGY9HaQs5g1WBdEIgy0J_cwUdkb2UD'];
+  const deviceTokens = [
+    "fOmwhsZlTtSqrakPRAv-cB:APA91bHnpWuGAsE_PD-DjydbyOCTE2QORKUjHZVwjiIVlw8Le7nK6Y71DaBp21eWQYo13daoR546DraKfKnzI_To9wZuXVrXH8LlvpcDKd3gN8TGY9HaQs5g1WBdEIgy0J_cwUdkb2UD",
+  ];
   const payload = {
     notification: {
       title: title,
@@ -313,10 +316,14 @@ const handlePushNotification = async (req, res) => {
   };
 
   try {
-    const response = await admin.messaging().sendToDevice(deviceTokens, payload);
+    const response = await admin
+      .messaging()
+      .sendToDevice(deviceTokens, payload);
     response.results.forEach((result, index) => {
       if (result.error) {
-        console.error(`Failure sending to ${deviceTokens[index]}: ${result.error.message}`);
+        console.error(
+          `Failure sending to ${deviceTokens[index]}: ${result.error.message}`
+        );
       }
     });
     res.status(200).send(`Successfully sent message.`);
@@ -326,6 +333,38 @@ const handlePushNotification = async (req, res) => {
   }
 };
 
+const handleGetSellerPostsById = async (req, res) => {
+  try {
+    const { sellerId } = req.body;
+
+    if (!sellerId) {
+      res.status(500).json({ message: "Seller Id is required" });
+    }
+
+    const seller = await Seller.findById(sellerId);
+
+    if (!seller) {
+      return res.status(404).json({ message: "Seller not found" });
+    }
+
+    const posts = await Post.find({ sellerId: sellerId })
+      .sort({ createdAt: -1 })
+      .populate({
+        path: "comments",
+        populate: {
+          path: "userId",
+          select: "name",
+        },
+      });
+
+    return res
+      .status(200)
+      .json({ data: posts, total: posts.length, message: "All post fetched" });
+  } catch (error) {
+    console.log("Error", error);
+    res.status(500).json({ message: "err " + error });
+  }
+};
 
 module.exports = {
   handleGetAllProducts,
@@ -341,5 +380,6 @@ module.exports = {
   handleGetUserCart,
   handleGetUserWishlist,
   handleAddCategory,
-  handlePushNotification
+  handlePushNotification,
+  handleGetSellerPostsById,
 };
