@@ -327,7 +327,10 @@ const handlePostCancelledOrders = async (req, res) => {
     if (data.length === 0) {
       return res.status(404).json({ message: "Order not found" });
     }
-    return res.status(200).json({ data, message: "Order status updated to rejected successfully!" });
+    return res.status(200).json({
+      data,
+      message: "Order status updated to rejected successfully!",
+    });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "err " + error });
@@ -414,7 +417,8 @@ const handleGetApprovedOrders = async (req, res) => {
 };
 
 const handleAddPost = async (req, res) => {
-  const { content, isPool, poolQuestion, poolAnswerFirst, poolAnswerSecond } = req.body;
+  const { content, isPool, poolQuestion, poolAnswerFirst, poolAnswerSecond } =
+    req.body;
   const { id } = req.user;
   try {
     let imgUrl = "";
@@ -424,7 +428,7 @@ const handleAddPost = async (req, res) => {
       imgUrl = imgUrlResponse.secure_url;
       fs.unlinkSync(req.file.path);
     }
-    if(isPool){
+    if (isPool) {
       answers = [poolAnswerFirst, poolAnswerSecond];
       await Post.create({
         content,
@@ -432,21 +436,44 @@ const handleAddPost = async (req, res) => {
         image: imgUrl,
         poolQuestion,
         poolAnswers: answers,
-        isPool
-      })
-    }else{
+        isPool,
+      });
+    } else {
       await Post.create({
         sellerId: id,
         content,
-        image: imgUrl
-      })
+        image: imgUrl,
+      });
     }
     return res.status(200).json({ message: "Post Added Successfully!" });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "err " + error });
   }
-}
+};
+
+const handleGetAllPosts = async (req, res) => {
+  try {
+    const { id } = req.user;
+
+    const posts = await Post.find({ sellerId: id })
+      .sort({ createdAt: -1 })
+      .populate({
+        path: "comments",
+        populate: {
+          path: "userId",
+          select: "name",
+        },
+      });
+
+    return res
+      .status(200)
+      .json({ data: posts, total: posts.length, message: "All post fetched" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "err " + error });
+  }
+};
 
 module.exports = {
   handlecreateProduct,
@@ -459,5 +486,6 @@ module.exports = {
   handleGetCancelledOrders,
   handlePostCancelledOrders,
   handleGetApprovedOrders,
-  handleAddPost
+  handleAddPost,
+  handleGetAllPosts,
 };
