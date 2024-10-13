@@ -470,7 +470,7 @@ const handleGetAllPosts = async (req, res) => {
       .status(200)
       .json({ data: posts, total: posts.length, message: "All post fetched" });
   } catch (error) {
-    console.log(error);
+    console.log("Error", error);
     res.status(500).json({ message: "err " + error });
   }
 };

@@ -356,13 +356,12 @@ const handleGetSellerPostsById = async (req, res) => {
           select: "name",
         },
       });
-    console.log(">>>>", sellerId, posts, posts?.length);
 
     return res
       .status(200)
       .json({ data: posts, total: posts.length, message: "All post fetched" });
   } catch (error) {
-    console.log(error);
+    console.log("Error", error);
     res.status(500).json({ message: "err " + error });
   }
 };
@@ -382,5 +381,5 @@ module.exports = {
   handleGetUserWishlist,
   handleAddCategory,
   handlePushNotification,
-  handleGetSellerPostsById
+  handleGetSellerPostsById,
 };
