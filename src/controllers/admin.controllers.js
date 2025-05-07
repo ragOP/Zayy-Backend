@@ -366,6 +366,19 @@ const handleGetSellerPostsById = async (req, res) => {
   }
 };
 
+const handleGetSingleSeller = async (req, res) => {
+  const id = req.params.id;
+  try {
+    const seller = await Seller.findById(id).select("-password");
+    if (!seller) return res.status(404).json({ message: "Seller Not Found!" });
+    return res.status(200).json({data: seller, message: "Seller Found!"});
+  }
+  catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "err " + error });
+  }
+};
+
 module.exports = {
   handleGetAllProducts,
   handleGetAllPendingProducts,
@@ -382,4 +395,5 @@ module.exports = {
   handleAddCategory,
   handlePushNotification,
   handleGetSellerPostsById,
+  handleGetSingleSeller
 };

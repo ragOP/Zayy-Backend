@@ -17,6 +17,7 @@ const {
   handleAddCategory,
   handlePushNotification,
   handleGetSellerPostsById,
+  handleGetSingleSeller
 } = require("../controllers/admin.controllers");
 const { admin } = require("../middlewares/protectedRoutes.middlewares");
 
@@ -60,6 +61,7 @@ router
   .route("/sendNotification")
   .post(upload.single("banner"), admin, handlePushNotification);
 router.route("/getSellerPosts").post(admin, handleGetSellerPostsById);
+router.route("/getseller/:id").get(admin, handleGetSingleSeller)
 
 // Error handling middleware -->
 router.use((err, req, res, next) => {
