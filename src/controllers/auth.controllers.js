@@ -9,8 +9,6 @@ const fs = require("fs");
 
 require("dotenv").config();
 
-// Hardcoded OTP As of Now
-const OTP = "123456";
 
 // Admin Login -->
 const handleLoginAdmin = async (req, res) => {
@@ -41,11 +39,7 @@ const handleLoginAdmin = async (req, res) => {
 // User Login Route -->
 const handleUserLogin = async (req, res) => {
   try {
-    const { number, otp } = req.body;
-
-    if (otp !== OTP) {
-      return res.status(400).json({ message: "Invalid OTP" });
-    }
+    const { number } = req.body;
     let user = await User.findOne({ number });
     if (user === null) {
       user = await User.create({ number });

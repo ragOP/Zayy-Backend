@@ -292,12 +292,15 @@ const handleAddCategory = async (req, res) => {
 
 const handlePushNotification = async (req, res) => {
   const { title, description } = req.body;
+  console.log("req.body", req.body);
   let bannerUrl = "";
 
   if (req.file) {
+    console.log("req.file", req.file);
     try {
       const bannerUrlResponse = await cloudinary.uploader.upload(req.file.path);
       bannerUrl = bannerUrlResponse.secure_url;
+      console.log("bannerUrlResponse", bannerUrlResponse);
       fs.unlinkSync(req.file.path);
     } catch (uploadError) {
       console.error("Error uploading image:", uploadError);
